@@ -1,0 +1,7 @@
+# Local-only files (not published)
+original/
+.claude/
+
+# Apps Script backend is kept out of this public repo:
+# it contains the staff list and default password seed.
+Code.gs
