@@ -4,161 +4,326 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPTUK HTPN e-CLINICAL PORTAL</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (layout utilities) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cobalt: { 600: '#1d4ed8', 700: '#1e40af', 800: '#1e3a8a', 900: '#0f172a' },
-                        sepia: { 50: '#fdfbf7', 100: '#f4ebd0', 400: '#d4b996', 800: '#5c4033', 900: '#3d2817' },
-                        cream: { 50: '#fffbf0', 100: '#fef3d6' }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['Courier New', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome & Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts: heavy display, technical mono, handwritten script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Space+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        canvas.signature-pad {
-            touch-action: none;
-            background: #ffffff;
-            cursor: crosshair;
+        /* ============ Printed-poster theme: "ordered chaos" ============ */
+        :root {
+            --ink: #111114;
+            --paper: #f3eee2;
+            --paper-2: #fbf8f1;
+            --red: #e10600;
+            --yellow: #ffd400;
+            --blue: #1546d1;
+            --white: #ffffff;
+            --display: 'Archivo', 'Arial Black', sans-serif;
+            --mono: 'Space Mono', 'Courier New', monospace;
+            --hand: 'Caveat', cursive;
         }
+        html, body { background: #1c1c1e; }
+        body { font-family: var(--mono); color: var(--ink); }
+
+        /* The printed sheet: paper grain, dot grid, creases, worn edges */
+        .sheet {
+            position: relative;
+            margin: 14px;
+            min-height: calc(100vh - 28px);
+            background-color: var(--paper);
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2  0 0 0 0 .17  0 0 0 0 .1  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+                radial-gradient(rgba(17,17,20,.28) 1px, transparent 1.3px);
+            background-size: 220px 220px, 14px 14px;
+            border: 3px solid var(--ink);
+            border-radius: 3px 6px 2px 8px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.55), inset 0 0 60px rgba(120,90,40,.18);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Fold creases (one vertical, one horizontal) */
+        .sheet::before, .sheet::after {
+            content: ""; position: absolute; pointer-events: none; z-index: 40;
+        }
+        .sheet::before {
+            top: 0; bottom: 0; left: 50%; width: 3px;
+            background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(0,0,0,.10) 60%, transparent);
+        }
+        .sheet::after {
+            left: 0; right: 0; top: 38%; height: 3px;
+            background: linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.09) 60%, transparent);
+        }
+        @media (max-width: 640px) { .sheet { margin: 6px; } }
+
+        .font-display { font-family: var(--display); }
+        .font-mono2 { font-family: var(--mono); }
+        .font-hand { font-family: var(--hand); }
+
+        /* Technical meta strip */
+        .meta-strip { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; border-bottom: 3px double var(--ink); }
+        .cmyk { display: inline-flex; gap: 4px; margin-left: 4px; }
+        .cmyk b { display: inline-grid; place-items: center; width: 15px; height: 15px; font-size: 9px; color: #fff; }
+        .tag-box { background: var(--ink); color: var(--yellow); padding: 2px 6px; font-weight: 700; }
+
+        /* Hazard stripes */
+        .hazard { height: 10px; background: repeating-linear-gradient(-45deg, var(--yellow) 0 11px, var(--ink) 11px 22px); }
+
+        /* Masthead */
+        .masthead { position: relative; background: var(--ink); color: #fff; border: 3px solid var(--ink); box-shadow: 8px 8px 0 rgba(17,17,20,.9); overflow: hidden; }
+        .masthead .slab {
+            position: absolute; right: -40px; top: 18px; bottom: -30px; width: 230px;
+            background: var(--red); transform: rotate(-9deg);
+            box-shadow: -6px 6px 0 var(--yellow);
+        }
+        .masthead .slab span {
+            position: absolute; left: 18px; top: 46px; font-family: var(--display); font-weight: 900;
+            font-size: 64px; letter-spacing: -.03em; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.55);
+        }
+        .masthead .burst {
+            position: absolute; right: 150px; top: -120px; width: 320px; height: 320px; border-radius: 50%;
+            background: repeating-conic-gradient(rgba(255,212,0,.16) 0 6deg, transparent 6deg 15deg);
+            pointer-events: none;
+        }
+        .logo-box { background: var(--yellow); color: var(--ink); width: 64px; height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; }
+        .logo-box small { font-size: 8px; font-weight: 700; letter-spacing: .08em; }
+        .tag-red { background: var(--red); color: #fff; font-family: var(--display); font-weight: 800; font-size: 10px; padding: 2px 6px; border: 2px solid #fff; letter-spacing: .04em; }
+        .mast-title { font-family: var(--display); font-weight: 900; letter-spacing: -.035em; line-height: .9; }
+
+        /* Buttons: thick ink border + hard offset shadow */
+        .btn {
+            font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: .02em;
+            border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+            padding: 9px 16px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform .08s, box-shadow .08s; cursor: pointer;
+        }
+        .btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+        .btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+        .btn:disabled { opacity: .55; cursor: wait; }
+        .btn-yellow { background: var(--yellow); color: var(--ink); }
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-white { background: #fff; color: var(--ink); }
+        .btn-ink { background: var(--ink); color: var(--yellow); }
+        .masthead .btn { border-color: var(--yellow); box-shadow: 4px 4px 0 var(--yellow); }
+        .masthead .btn-ghost { background: transparent; color: #fff; border-color: #fff; box-shadow: 4px 4px 0 #fff; }
+
+        /* Cards */
+        .card { position: relative; background: var(--paper-2); border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); }
+        .card-head { border-bottom: 3px solid var(--ink); }
+        .ribbon {
+            position: absolute; top: -18px; left: -14px; z-index: 5;
+            background: var(--red); color: #fff; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
+            font-family: var(--display); font-weight: 800; font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+            padding: 3px 10px; transform: rotate(-3.5deg);
+        }
+        .ribbon.blue { background: var(--blue); }
+        .ribbon.yellow { background: var(--yellow); color: var(--ink); }
+        .chip { display: inline-block; font-family: var(--display); font-weight: 800; font-size: 10px; padding: 2px 6px; border: 2px solid var(--ink); background: var(--yellow); color: var(--ink); text-transform: uppercase; }
+        .chip.red { background: var(--red); color: #fff; }
+        .chip.blue { background: var(--blue); color: #fff; }
+        .chip.ink { background: var(--ink); color: var(--yellow); }
+        .kicker { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #3d3d44; }
+        .h-display { font-family: var(--display); font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; line-height: .95; }
+        .stamp {
+            position: absolute; width: 74px; height: 74px; border-radius: 50%;
+            border: 3px solid var(--red); outline: 2px dashed var(--red); outline-offset: -9px;
+            color: var(--red); display: grid; place-items: center; text-align: center;
+            font-family: var(--display); font-weight: 900; font-size: 10px; line-height: 1; transform: rotate(14deg); opacity: .85;
+        }
+        .stamp small { display: block; font-size: 7px; letter-spacing: .08em; margin-top: 2px; }
+        .scribble { font-family: var(--hand); color: var(--red); font-size: 24px; line-height: 1; transform: rotate(-6deg); display: inline-block; }
+        .giant-outline { font-family: var(--display); font-weight: 900; color: transparent; -webkit-text-stroke: 2px rgba(17,17,20,.12); letter-spacing: -.04em; line-height: .8; pointer-events: none; user-select: none; }
+
+        /* Form fields */
+        .field-label { font-family: var(--display); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+        .field-label i { color: var(--red); }
+        .field {
+            width: 100%; background: #fff; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+            padding: 9px 11px; font-family: var(--mono); font-size: 13px; border-radius: 0; outline: none;
+        }
+        .field:focus { box-shadow: 4px 4px 0 var(--blue); border-color: var(--ink); background: #fffef6; }
+        .field::placeholder { color: #8c8c94; }
+        select.field { appearance: auto; }
+        canvas.signature-pad { touch-action: none; background: #fff; cursor: crosshair; display: block; }
+        .sig-wrap { border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); background: #fff; position: relative; }
+        .sig-wrap::after { content: "X"; position: absolute; left: 10px; bottom: 6px; font-family: var(--display); font-weight: 900; color: rgba(225,6,0,.35); pointer-events: none; }
+        .notice { background: #fff6c2; border: 3px solid var(--ink); }
+
+        /* Tabs */
+        .tab-btn { background: #fff; color: var(--ink); }
+        .tab-btn.is-active { background: var(--ink); color: var(--yellow); }
+
+        /* Stat tiles */
+        .stat { background: #fff; border: 3px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); position: relative; overflow: hidden; }
+        .stat::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 8px; }
+        .stat.s-blue::before { background: var(--blue); }
+        .stat.s-red::before { background: var(--red); }
+        .stat.s-yellow::before { background: var(--yellow); }
+        .stat.s-ink::before { background: var(--ink); }
+        .stat .num { font-family: var(--display); font-weight: 900; letter-spacing: -.03em; }
+        .stat .lbl { font-family: var(--display); font-weight: 800; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+
+        /* Tables */
+        .table-brut { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; }
+        .table-brut th { background: var(--ink); color: var(--yellow); font-family: var(--display); font-weight: 800; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; border: 2px solid var(--ink); padding: 8px; text-align: left; }
+        .table-brut td { border: 2px solid var(--ink); padding: 8px; vertical-align: top; }
+        .table-brut tbody tr:nth-child(even) td { background: #faf6ea; }
+        .table-wrap { border: 3px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); background: #fff; }
+
+        /* Modal */
+        .modal-box { background: var(--paper-2); border: 3px solid var(--ink); box-shadow: 10px 10px 0 var(--yellow), 10px 10px 0 3px var(--ink); }
+        #modal_icon { border: 3px solid var(--ink); }
     </style>
 </head>
-<body class="bg-sepia-50 text-sepia-900 min-h-screen flex flex-col justify-between">
+<body class="min-h-screen">
+<div class="sheet">
 
-    <!-- Top Navigation / Header -->
-    <header class="bg-cobalt-900 text-white shadow-md border-b-4 border-amber-500">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-amber-500 text-cobalt-900 p-2.5 rounded-lg font-bold text-xl shadow">
-                    <i class="fas fa-stethoscope"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg md:text-xl font-bold tracking-tight">PPTUK HTPN e-CLINICAL PORTAL</h1>
-                    <p class="text-xs text-amber-200" data-i18n="appSub"></p>
+    <!-- Technical meta strip -->
+    <div class="meta-strip mx-4 md:mx-8 mt-4 pb-2 flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-1">
+            <i class="fas fa-crosshairs"></i> JOB-NO..2026-KLN-HTPN //.REV09.
+            <span class="cmyk"><b style="background:var(--red)">C</b><b style="background:var(--yellow);color:var(--ink)">M</b><b style="background:var(--blue)">Y</b><b style="background:var(--ink)">K</b></span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="tag-box">PORTAL KLINIKAL</span> .DENSITY: 98.4%
+        </div>
+    </div>
+
+    <!-- Masthead -->
+    <header class="masthead mx-4 md:mx-8 mt-5">
+        <div class="hazard"></div>
+        <div class="burst"></div>
+        <div class="slab hidden lg:block"><span>HTPN</span></div>
+        <div class="relative z-10 px-5 md:px-8 py-6">
+            <div class="flex items-start gap-5">
+                <div class="logo-box"><i class="fas fa-stethoscope text-2xl"></i><small>KLINIKAL</small></div>
+                <div class="min-w-0 lg:pr-56">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="tag-red">SULIT / RASMI</span>
+                        <span class="text-[12px] font-bold" style="color:var(--yellow)">Healthcare Intelligence Office HTPN Kajang</span>
+                    </div>
+                    <h1 class="mast-title text-3xl md:text-5xl">PPTUK HTPN <span class="font-mono2 font-bold tracking-normal text-2xl md:text-3xl align-middle" style="color:var(--yellow)">E-CLINICAL</span></h1>
+                    <p class="text-xs mt-2 text-gray-200" data-i18n="appSub"></p>
                 </div>
             </div>
-
-            <!-- Language toggle, user info & login/logout -->
-            <div class="flex items-center gap-3">
-                <button id="lang_toggle_btn" onclick="toggleLanguage()" title="Language / Bahasa"
-                        class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded border border-white/30 transition flex items-center gap-2">
+            <div class="mt-5 pt-4 border-t border-white/20 flex flex-wrap items-center gap-3 lg:pr-56">
+                <button id="nav_auth_btn" class="btn btn-yellow">
+                    <i class="fas fa-key"></i> <span id="auth_btn_label"></span>
+                </button>
+                <button id="lang_toggle_btn" onclick="toggleLanguage()" title="Language / Bahasa" class="btn btn-ghost">
                     <i class="fas fa-language"></i> <span data-i18n="langBtn"></span>
                 </button>
-                <div id="nav_user_badge" class="hidden items-center gap-2 bg-cobalt-800 px-3 py-1.5 rounded-full text-xs font-mono border border-cobalt-600">
-                    <i class="fas fa-user-shield text-amber-400"></i>
+                <div id="nav_user_badge" class="hidden items-center gap-2 px-3 py-2 text-xs font-bold" style="background:var(--blue);border:3px solid #fff">
+                    <i class="fas fa-user-shield" style="color:var(--yellow)"></i>
                     <span id="nav_display_name"></span>
                 </div>
-                <button id="nav_auth_btn" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-cobalt-900 font-bold text-xs rounded shadow transition flex items-center gap-2">
-                    <i class="fas fa-sign-in-alt"></i> <span id="auth_btn_label"></span>
-                </button>
             </div>
         </div>
+        <div class="hazard relative z-10"></div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-10">
 
         <!-- VIEW 1: LOGIN -->
-        <div id="view_login" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg border border-sepia-100 my-12">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-cobalt-900 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h2 class="text-xl font-bold text-cobalt-900" data-i18n="loginTitle"></h2>
-                <p class="text-xs text-gray-500 mt-1" data-i18n="loginSub"></p>
-            </div>
+        <div id="view_login" class="relative max-w-xl mx-auto mt-4 mb-10">
+            <div class="giant-outline absolute -left-24 -top-10 text-[140px] hidden lg:block" style="transform:rotate(-8deg)">MASUK</div>
+            <div class="card p-6 md:p-9">
+                <span class="ribbon"><i class="fas fa-star"></i> Priority Access / Borang Autentikasi</span>
+                <div class="stamp" style="right:22px;top:20px">RASMI<small>VERIFIED</small></div>
+                <div class="flex items-center gap-2 mt-2"><span class="chip">AUTH_V2</span><span class="kicker">Sistem Kawalan Masuk</span></div>
+                <h2 class="h-display text-3xl md:text-4xl mt-2 pr-20" data-i18n="loginTitle"></h2>
+                <p class="text-xs mt-2 text-gray-600" data-i18n="loginSub"></p>
+                <div class="border-t-[3px] border-black my-6"></div>
 
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1" data-i18n="userId"></label>
-                    <input type="text" id="login_user_id" required data-i18n-ph="userIdPh"
-                           class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cobalt-600 focus:outline-none">
+                <form onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="field-label" for="login_user_id"><i class="fas fa-id-card"></i> <span data-i18n="userId"></span></label>
+                        <input type="text" id="login_user_id" required data-i18n-ph="userIdPh" autocomplete="username" class="field">
+                    </div>
+                    <div>
+                        <label class="field-label" for="login_password"><i class="fas fa-lock"></i> <span data-i18n="password"></span></label>
+                        <input type="password" id="login_password" required data-i18n-ph="passwordPh" autocomplete="current-password" class="field">
+                    </div>
+                    <button type="submit" id="login_submit_btn" class="btn btn-red w-full py-4 text-sm">
+                        <i class="fas fa-right-to-bracket"></i> <span data-i18n="loginBtn"></span>
+                    </button>
+                </form>
+                <div class="notice mt-7 p-4 text-[11px] leading-relaxed">
+                    <p class="font-bold uppercase" style="color:var(--red)"><i class="fas fa-shield-halved mr-1"></i> <span data-i18n="noteTitle"></span></p>
+                    <p class="mt-1" data-i18n="noteBody"></p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1" data-i18n="password"></label>
-                    <input type="password" id="login_password" required data-i18n-ph="passwordPh"
-                           class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cobalt-600 focus:outline-none">
-                </div>
-                <button type="submit" id="login_submit_btn" class="w-full py-3 bg-cobalt-900 hover:bg-cobalt-800 text-white font-bold rounded-lg shadow transition text-sm disabled:opacity-60" data-i18n="loginBtn"></button>
-            </form>
-            <div class="mt-6 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
-                <p class="font-bold"><i class="fas fa-info-circle mr-1"></i> <span data-i18n="noteTitle"></span></p>
-                <p class="mt-1" data-i18n="noteBody"></p>
+                <div class="text-right mt-3"><span class="scribble">semak &amp; sahkan ✓</span></div>
             </div>
         </div>
 
         <!-- VIEW 2: OFFICER PORTAL -->
-        <div id="view_officer_portal" class="hidden space-y-6">
+        <div id="view_officer_portal" class="hidden space-y-10">
 
             <!-- Officer Welcome Banner -->
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-cobalt-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded" data-i18n="officerPortal"></span>
-                    <h2 id="welcome_officer_name" class="text-xl font-bold text-cobalt-900 mt-1"></h2>
-                    <p class="text-xs text-gray-500" data-i18n="officerSub"></p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center gap-2 mr-2">
-                        <label for="report_month_select" class="text-[11px] font-bold text-gray-600" data-i18n="month"></label>
-                        <select id="report_month_select" onchange="onMonthChange()" class="p-2 text-xs border rounded bg-white font-bold"></select>
+            <div class="card p-6 md:p-8 overflow-visible">
+                <span class="ribbon blue" data-i18n="officerPortal"></span>
+                <div class="giant-outline absolute right-4 bottom-1 text-[90px] hidden md:block">PPTUK</div>
+                <div class="relative flex flex-col lg:flex-row justify-between items-start lg:items-end gap-5">
+                    <div>
+                        <span class="kicker">Pegawai Bertugas //</span>
+                        <h2 id="welcome_officer_name" class="h-display text-2xl md:text-3xl mt-1"></h2>
+                        <p class="text-xs text-gray-600 mt-2 max-w-xl" data-i18n="officerSub"></p>
                     </div>
-                    <button onclick="switchTab('attendance')" id="btn_tab_att" class="px-4 py-2 bg-cobalt-900 text-white font-bold text-xs rounded shadow">
-                        <i class="fas fa-clipboard-check mr-1"></i> <span data-i18n="tabAtt"></span>
-                    </button>
-                    <button onclick="switchTab('logbook')" id="btn_tab_lb" class="px-4 py-2 bg-gray-200 text-gray-700 font-bold text-xs rounded hover:bg-gray-300 transition">
-                        <i class="fas fa-book mr-1"></i> <span data-i18n="tabLb"></span>
-                    </button>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <label for="report_month_select" class="field-label !mb-0" data-i18n="month"></label>
+                            <select id="report_month_select" onchange="onMonthChange()" class="field !w-auto !py-2 font-bold"></select>
+                        </div>
+                        <button onclick="switchTab('attendance')" id="btn_tab_att" class="btn tab-btn is-active">
+                            <i class="fas fa-clipboard-check"></i> <span data-i18n="tabAtt"></span>
+                        </button>
+                        <button onclick="switchTab('logbook')" id="btn_tab_lb" class="btn tab-btn">
+                            <i class="fas fa-book"></i> <span data-i18n="tabLb"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- TAB A: ATTENDANCE LOG -->
-            <div id="tab_content_attendance" class="space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="tab_content_attendance">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
                     <!-- Left: Attendance Form -->
-                    <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 lg:col-span-1 space-y-4">
-                        <div class="border-b pb-3">
-                            <h3 class="font-bold text-cobalt-900 text-sm flex items-center gap-2">
-                                <i class="fas fa-user-clock text-amber-500"></i> <span data-i18n="newSession"></span>
-                            </h3>
-                            <p class="text-xs text-gray-500 mt-0.5" data-i18n="newSessionSub"></p>
+                    <div class="card p-6 lg:col-span-1" style="transform:rotate(-.6deg)">
+                        <span class="ribbon yellow">01 / Rekod Sesi</span>
+                        <div class="card-head pb-3 mb-4 mt-2">
+                            <h3 class="h-display text-lg flex items-center gap-2"><i class="fas fa-user-clock" style="color:var(--red)"></i> <span data-i18n="newSession"></span></h3>
+                            <p class="text-[11px] text-gray-600 mt-1" data-i18n="newSessionSub"></p>
                         </div>
 
-                        <form id="attendance_form" onsubmit="handleAttendanceSubmit(event)" class="space-y-3 text-xs">
+                        <form id="attendance_form" onsubmit="handleAttendanceSubmit(event)" class="space-y-4 text-xs">
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1" data-i18n="dutyDate"></label>
-                                <input type="date" id="att_date" required class="w-full p-2 border rounded">
+                                <label class="field-label" for="att_date" data-i18n="dutyDate"></label>
+                                <input type="date" id="att_date" required class="field">
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="start"></label>
-                                    <input type="time" id="att_start" value="08:00" required oninput="autoCalcHours()" class="w-full p-2 border rounded">
+                                    <label class="field-label" for="att_start" data-i18n="start"></label>
+                                    <input type="time" id="att_start" value="08:00" required oninput="autoCalcHours()" class="field">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="end"></label>
-                                    <input type="time" id="att_end" value="13:00" required oninput="autoCalcHours()" class="w-full p-2 border rounded">
+                                    <label class="field-label" for="att_end" data-i18n="end"></label>
+                                    <input type="time" id="att_end" value="13:00" required oninput="autoCalcHours()" class="field">
                                 </div>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1" data-i18n="clinicalHours"></label>
-                                <input type="number" step="0.25" min="0.25" max="24" id="att_hours" value="5" required class="w-full p-2 border rounded bg-gray-50 font-bold text-cobalt-900">
+                                <label class="field-label" for="att_hours" data-i18n="clinicalHours"></label>
+                                <input type="number" step="0.25" min="0.25" max="24" id="att_hours" value="5" required class="field font-bold" style="background:#fff6c2">
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1" data-i18n="activity"></label>
+                                <label class="field-label" for="att_activity" data-i18n="activity"></label>
                                 <!-- Option values stay in Malay: they are what gets saved to the sheet and PDF -->
-                                <select id="att_activity" class="w-full p-2 border rounded">
+                                <select id="att_activity" class="field">
                                     <option value="3.1 Klinik Pakar / Pesakit Luar" data-i18n="act31"></option>
                                     <option value="3.2 Pengurusan Pesakit Wad & Discaj" data-i18n="act32"></option>
                                     <option value="3.3 Jabatan Kecemasan & Trauma" data-i18n="act33"></option>
@@ -166,60 +331,61 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1">
-                                    <span data-i18n="details"></span> <span class="font-normal text-gray-400" data-i18n="optional"></span>
+                                <label class="field-label" for="att_details">
+                                    <span data-i18n="details"></span> <span class="font-mono2 normal-case font-normal text-gray-500" data-i18n="optional"></span>
                                 </label>
-                                <textarea id="att_details" rows="2" data-i18n-ph="detailsPh" class="w-full p-2 border rounded"></textarea>
+                                <textarea id="att_details" rows="2" data-i18n-ph="detailsPh" class="field"></textarea>
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="supName"></label>
-                                    <input type="text" id="att_supervisor" data-i18n-ph="supNamePh" required class="w-full p-2 border rounded">
+                                    <label class="field-label" for="att_supervisor" data-i18n="supName"></label>
+                                    <input type="text" id="att_supervisor" data-i18n-ph="supNamePh" required class="field">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="supRole"></label>
-                                    <input type="text" id="att_sup_role" data-i18n-ph="supRolePh" required class="w-full p-2 border rounded">
+                                    <label class="field-label" for="att_sup_role" data-i18n="supRole"></label>
+                                    <input type="text" id="att_sup_role" data-i18n-ph="supRolePh" required class="field">
                                 </div>
                             </div>
 
-                            <!-- Touchscreen Finger Signature Pad -->
+                            <!-- Supervisor signature pad -->
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1 flex justify-between items-center">
-                                    <span data-i18n="sigLabel"></span>
-                                    <button type="button" onclick="pads.att.clear()" class="text-red-600 hover:underline text-[10px]" data-i18n="clear"></button>
-                                </label>
-                                <div class="border rounded bg-white overflow-hidden">
+                                <div class="field-label justify-between">
+                                    <span><i class="fas fa-signature"></i> <span data-i18n="sigLabel"></span></span>
+                                    <button type="button" onclick="pads.att.clear()" class="chip red" data-i18n="clear"></button>
+                                </div>
+                                <div class="sig-wrap">
                                     <canvas id="signature_canvas" class="signature-pad w-full h-28"></canvas>
                                 </div>
-                                <p class="text-[10px] text-gray-500 mt-1" data-i18n="sigHint"></p>
+                                <p class="text-[10px] text-gray-600 mt-2" data-i18n="sigHint"></p>
                             </div>
 
-                            <button type="submit" id="att_submit_btn" class="w-full py-2.5 bg-cobalt-900 hover:bg-cobalt-800 text-white font-bold rounded shadow transition disabled:opacity-60">
-                                <i class="fas fa-check-circle mr-1"></i> <span data-i18n="saveSession"></span>
+                            <button type="submit" id="att_submit_btn" class="btn btn-ink w-full py-3">
+                                <i class="fas fa-check-circle"></i> <span data-i18n="saveSession"></span>
                             </button>
                         </form>
                     </div>
 
                     <!-- Right: Recorded Sessions Table -->
-                    <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center border-b pb-3">
+                    <div class="card p-6 lg:col-span-2">
+                        <span class="ribbon">02 / Senarai Sesi</span>
+                        <div class="card-head flex justify-between items-end gap-3 pb-3 mb-5 mt-2">
                             <div>
-                                <h3 class="font-bold text-cobalt-900 text-sm" data-i18n="sessionsTitle"></h3>
-                                <p class="text-xs text-gray-500"><span data-i18n="sessionsSub"></span> <b id="att_month_label"></b>.</p>
+                                <h3 class="h-display text-lg" data-i18n="sessionsTitle"></h3>
+                                <p class="text-[11px] text-gray-600 mt-1"><span data-i18n="sessionsSub"></span> <b id="att_month_label"></b>.</p>
                             </div>
-                            <span id="att_count_badge" class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded"></span>
+                            <span id="att_count_badge" class="chip blue whitespace-nowrap"></span>
                         </div>
 
-                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead class="bg-gray-100 sticky top-0 text-gray-700 uppercase">
+                        <div class="table-wrap overflow-x-auto max-h-[560px] overflow-y-auto">
+                            <table class="table-brut">
+                                <thead class="sticky top-0">
                                     <tr>
-                                        <th class="p-2 border" data-i18n="thDate"></th>
-                                        <th class="p-2 border" data-i18n="thTime"></th>
-                                        <th class="p-2 border" data-i18n="thActivity"></th>
-                                        <th class="p-2 border" data-i18n="thSupervisor"></th>
-                                        <th class="p-2 border" data-i18n="thSignature"></th>
-                                        <th class="p-2 border text-center" data-i18n="thAction"></th>
+                                        <th data-i18n="thDate"></th>
+                                        <th data-i18n="thTime"></th>
+                                        <th data-i18n="thActivity"></th>
+                                        <th data-i18n="thSupervisor"></th>
+                                        <th data-i18n="thSignature"></th>
+                                        <th class="!text-center" data-i18n="thAction"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="attendance_table_body"></tbody>
@@ -230,77 +396,82 @@
             </div>
 
             <!-- TAB B: MONTHLY LOG BOOK & SUBMISSION TO TDP 1 -->
-            <div id="tab_content_logbook" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 space-y-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
+            <div id="tab_content_logbook" class="hidden">
+                <div class="card p-6 md:p-8 space-y-8">
+                    <span class="ribbon">Lampiran A / Laporan Bulanan</span>
+                    <div class="card-head flex flex-col md:flex-row justify-between items-start md:items-end pb-4 gap-4 mt-2">
                         <div>
-                            <h3 class="font-bold text-cobalt-900 text-base" data-i18n="lbTitle"></h3>
-                            <p class="text-xs text-gray-500" data-i18n="lbSub"></p>
+                            <h3 class="h-display text-xl md:text-2xl" data-i18n="lbTitle"></h3>
+                            <p class="text-[11px] text-gray-600 mt-1" data-i18n="lbSub"></p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-xs text-gray-600"><span data-i18n="reportMonth"></span> <b id="lb_month_label">-</b></span>
-                            <button onclick="loadMySessions()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-bold rounded">
+                            <span class="text-xs"><span data-i18n="reportMonth"></span> <b id="lb_month_label" class="chip ink">-</b></span>
+                            <button onclick="loadMySessions()" class="btn btn-white !py-2">
                                 <i class="fas fa-sync-alt"></i> <span data-i18n="refresh"></span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Summary Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                            <p class="text-xs text-blue-700 font-bold uppercase" data-i18n="totalSessions"></p>
-                            <p id="sum_total_sessions" class="text-2xl font-black text-blue-900 mt-1">0</p>
+                    <!-- Summary tiles -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                        <div class="stat s-blue p-4 pt-6">
+                            <p class="lbl" style="color:var(--blue)" data-i18n="totalSessions"></p>
+                            <p id="sum_total_sessions" class="num text-4xl mt-1">0</p>
                         </div>
-                        <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
-                            <p class="text-xs text-indigo-700 font-bold uppercase" data-i18n="totalHours"></p>
-                            <p id="sum_total_hours" class="text-2xl font-black text-indigo-900 mt-1">0.0</p>
+                        <div class="stat s-ink p-4 pt-6">
+                            <p class="lbl" data-i18n="totalHours"></p>
+                            <p id="sum_total_hours" class="num text-3xl mt-1">0.0</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                            <p class="text-xs text-amber-800 font-bold uppercase" data-i18n="target"></p>
-                            <p id="sum_compliance_pct" class="text-2xl font-black text-amber-900 mt-1">0.0%</p>
+                        <div class="stat s-yellow p-4 pt-6">
+                            <p class="lbl" data-i18n="target"></p>
+                            <p id="sum_compliance_pct" class="num text-4xl mt-1">0.0%</p>
                         </div>
-                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-lg">
-                            <p class="text-xs text-emerald-700 font-bold uppercase" data-i18n="complianceStatus"></p>
-                            <p id="sum_status_text" class="text-sm font-bold text-emerald-900 mt-2"></p>
+                        <div class="stat s-red p-4 pt-6">
+                            <p class="lbl" style="color:var(--red)" data-i18n="complianceStatus"></p>
+                            <p id="sum_status_text" class="text-sm font-bold mt-2"></p>
                         </div>
                     </div>
 
-                    <!-- Submission Action -->
-                    <div class="bg-cream-50 border-2 border-dashed border-amber-400 p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div>
-                            <h4 class="font-bold text-sepia-900 text-sm" data-i18n="submitTitle"></h4>
-                            <p class="text-xs text-gray-600 mt-1" data-i18n-html="submitSub"></p>
+                    <!-- Submission block -->
+                    <div class="relative p-6 md:p-7 flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-6" style="background:#fff6c2;border:3px dashed var(--ink)">
+                        <div class="flex-1">
+                            <span class="chip red">Serahan Rasmi</span>
+                            <h4 class="h-display text-lg mt-2" data-i18n="submitTitle"></h4>
+                            <p class="text-[11px] text-gray-700 mt-1" data-i18n-html="submitSub"></p>
 
-                            <!-- Officer's initial / signature for the Lampiran A PDF -->
-                            <div class="mt-4 max-w-sm text-xs">
-                                <label class="font-bold text-gray-700 mb-1 flex justify-between items-center">
-                                    <span data-i18n="lbSigLabel"></span>
-                                    <button type="button" onclick="pads.lb.clear()" class="text-red-600 hover:underline text-[10px]" data-i18n="clear"></button>
-                                </label>
-                                <div class="border rounded bg-white overflow-hidden">
+                            <!-- Officer's initials for the Lampiran A PDF -->
+                            <div class="mt-5 max-w-sm text-xs">
+                                <div class="field-label justify-between">
+                                    <span><i class="fas fa-pen-nib"></i> <span data-i18n="lbSigLabel"></span></span>
+                                    <button type="button" onclick="pads.lb.clear()" class="chip red" data-i18n="clear"></button>
+                                </div>
+                                <div class="sig-wrap">
                                     <canvas id="lb_signature_canvas" class="signature-pad w-full h-24"></canvas>
                                 </div>
-                                <p class="text-[10px] text-gray-500 mt-1" data-i18n="lbSigHint"></p>
+                                <p class="text-[10px] text-gray-700 mt-2" data-i18n="lbSigHint"></p>
                             </div>
                         </div>
-                        <button onclick="submitLogbookToDeputyDirector()" id="lb_submit_btn" class="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-2 whitespace-nowrap disabled:opacity-60">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="submitBtn"></span>
-                        </button>
+                        <div class="flex flex-col items-end gap-2 lg:max-w-xs">
+                            <span class="scribble">hantar ke TDP 1 →</span>
+                            <button onclick="submitLogbookToDeputyDirector()" id="lb_submit_btn" class="btn btn-red py-4 px-6 w-full lg:w-auto">
+                                <i class="fas fa-paper-plane"></i> <span data-i18n="submitBtn"></span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Officer's own submission history -->
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-cobalt-900 text-sm" data-i18n="historyTitle"></h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead class="bg-gray-100 text-gray-700 uppercase">
+                    <div class="space-y-3">
+                        <h4 class="h-display text-base flex items-center gap-2"><span class="chip blue">03</span> <span data-i18n="historyTitle"></span></h4>
+                        <div class="table-wrap overflow-x-auto">
+                            <table class="table-brut">
+                                <thead>
                                     <tr>
-                                        <th class="p-2 border" data-i18n="thDateTime"></th>
-                                        <th class="p-2 border" data-i18n="thMonth"></th>
-                                        <th class="p-2 border" data-i18n="thSessions"></th>
-                                        <th class="p-2 border" data-i18n="thHours"></th>
-                                        <th class="p-2 border" data-i18n="thAchievement"></th>
-                                        <th class="p-2 border text-center">PDF</th>
+                                        <th data-i18n="thDateTime"></th>
+                                        <th data-i18n="thMonth"></th>
+                                        <th data-i18n="thSessions"></th>
+                                        <th data-i18n="thHours"></th>
+                                        <th data-i18n="thAchievement"></th>
+                                        <th class="!text-center">PDF</th>
                                     </tr>
                                 </thead>
                                 <tbody id="my_submissions_table_body"></tbody>
@@ -313,52 +484,56 @@
         </div>
 
         <!-- VIEW 3: ADMIN DASHBOARD -->
-        <div id="view_admin_dashboard" class="hidden space-y-6">
-            <div class="bg-cobalt-900 text-white p-6 rounded-xl shadow flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <span class="bg-amber-500 text-cobalt-900 text-xs font-bold px-2.5 py-1 rounded uppercase" data-i18n="adminBadge"></span>
-                    <h2 class="text-xl font-bold mt-1" data-i18n="adminTitle"></h2>
-                    <p class="text-xs text-amber-200" data-i18n="adminEmail"></p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <select id="admin_month_filter" onchange="renderAdminTable()" class="p-2 text-xs rounded text-cobalt-900 font-bold"></select>
-                    <button onclick="loadAdminData()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded border border-white/20 transition">
-                        <i class="fas fa-sync-alt mr-1"></i> <span data-i18n="reloadData"></span>
-                    </button>
+        <div id="view_admin_dashboard" class="hidden space-y-10">
+            <div class="card p-6 md:p-8" style="background:var(--blue);color:#fff">
+                <span class="ribbon yellow" data-i18n="adminBadge"></span>
+                <div class="giant-outline absolute right-4 bottom-0 text-[90px] hidden md:block" style="-webkit-text-stroke-color:rgba(255,255,255,.18)">TDP 1</div>
+                <div class="relative flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mt-2">
+                    <div>
+                        <h2 class="h-display text-2xl md:text-3xl" data-i18n="adminTitle"></h2>
+                        <p class="text-xs mt-2" style="color:var(--yellow)" data-i18n="adminEmail"></p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select id="admin_month_filter" onchange="renderAdminTable()" class="field !w-auto !py-2 font-bold text-black"></select>
+                        <button onclick="loadAdminData()" class="btn btn-yellow">
+                            <i class="fas fa-sync-alt"></i> <span data-i18n="reloadData"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Admin Stats Overview -->
+            <!-- Admin stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="reportsReceived"></p>
-                    <p id="admin_total_reports" class="text-3xl font-black text-cobalt-900 mt-2">0</p>
+                <div class="stat s-ink p-6 pt-8">
+                    <p class="lbl" data-i18n="reportsReceived"></p>
+                    <p id="admin_total_reports" class="num text-5xl mt-2">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="compliantCount"></p>
-                    <p id="admin_compliant_count" class="text-3xl font-black text-emerald-600 mt-2">0</p>
+                <div class="stat s-blue p-6 pt-8">
+                    <p class="lbl" style="color:var(--blue)" data-i18n="compliantCount"></p>
+                    <p id="admin_compliant_count" class="num text-5xl mt-2" style="color:var(--blue)">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="notCompliantCount"></p>
-                    <p id="admin_noncompliant_count" class="text-3xl font-black text-red-600 mt-2">0</p>
+                <div class="stat s-red p-6 pt-8">
+                    <p class="lbl" style="color:var(--red)" data-i18n="notCompliantCount"></p>
+                    <p id="admin_noncompliant_count" class="num text-5xl mt-2" style="color:var(--red)">0</p>
                 </div>
             </div>
 
-            <!-- Admin Submissions Table -->
-            <div class="bg-white p-6 rounded-xl shadow border space-y-4">
-                <h3 class="font-bold text-cobalt-900 text-sm" data-i18n="adminTableTitle"></h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-gray-100 text-gray-700 uppercase">
+            <!-- Admin submissions table -->
+            <div class="card p-6 space-y-5">
+                <span class="ribbon">Rekod Diterima</span>
+                <h3 class="h-display text-lg mt-2" data-i18n="adminTableTitle"></h3>
+                <div class="table-wrap overflow-x-auto">
+                    <table class="table-brut">
+                        <thead>
                             <tr>
-                                <th class="p-3 border" data-i18n="thDateTime"></th>
-                                <th class="p-3 border" data-i18n="thOfficerId"></th>
-                                <th class="p-3 border" data-i18n="thOfficerName"></th>
-                                <th class="p-3 border" data-i18n="thMonth"></th>
-                                <th class="p-3 border" data-i18n="thHours"></th>
-                                <th class="p-3 border" data-i18n="thAchievement"></th>
-                                <th class="p-3 border" data-i18n="thStatus"></th>
-                                <th class="p-3 border text-center" data-i18n="thPdf"></th>
+                                <th data-i18n="thDateTime"></th>
+                                <th data-i18n="thOfficerId"></th>
+                                <th data-i18n="thOfficerName"></th>
+                                <th data-i18n="thMonth"></th>
+                                <th data-i18n="thHours"></th>
+                                <th data-i18n="thAchievement"></th>
+                                <th data-i18n="thStatus"></th>
+                                <th class="!text-center" data-i18n="thPdf"></th>
                             </tr>
                         </thead>
                         <tbody id="admin_submissions_table_body"></tbody>
@@ -370,18 +545,19 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t py-4 text-center text-xs text-gray-500 mt-12">
-        <p>PPTUK HTPN e-CLINICAL PORTAL &copy; 2026 | <span data-i18n="footerOrg"></span></p>
-        <p class="text-[10px] text-gray-400 mt-1" data-i18n="footerSupport"></p>
+    <footer class="mx-4 md:mx-8 mb-5 pt-3 text-[10px] uppercase tracking-wider flex flex-col md:flex-row justify-between gap-2" style="border-top:3px double var(--ink)">
+        <p>PPTUK HTPN e-CLINICAL PORTAL &copy; 2026 // <span data-i18n="footerOrg"></span></p>
+        <p data-i18n="footerSupport"></p>
     </footer>
+</div>
 
     <!-- Notification Modal -->
-    <div id="modal_notification" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white max-w-sm w-full p-6 rounded-xl shadow-xl text-center space-y-4">
+    <div id="modal_notification" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+        <div class="modal-box max-w-sm w-full p-6 text-center space-y-4">
             <div id="modal_icon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl"></div>
-            <h3 id="modal_title" class="font-bold text-gray-900 text-base"></h3>
-            <p id="modal_message" class="text-xs text-gray-600"></p>
-            <button onclick="closeModal()" class="w-full py-2.5 bg-cobalt-900 text-white font-bold rounded text-xs">OK</button>
+            <h3 id="modal_title" class="h-display text-lg"></h3>
+            <p id="modal_message" class="text-xs text-gray-700"></p>
+            <button onclick="closeModal()" class="btn btn-ink w-full">OK</button>
         </div>
     </div>
 
@@ -399,15 +575,15 @@
         const I18N = {
             ms: {
                 langBtn: "English",
-                appSub: "Jabatan Kesihatan Negeri Selangor | Portal Rasmi Tugas Klinikal",
+                appSub: "Portal Perlaksanaan Tugas Klinikal HTPN Kajang",
                 login: "Log Masuk", logout: "Log Keluar",
-                loginTitle: "Log Masuk Portal PPTUK",
-                loginSub: "Sila masukkan ID Pengguna & kata laluan yang diberikan.",
+                loginTitle: "Log Masuk Pegawai",
+                loginSub: "Sila masukkan ID Pengguna Klinikal & Kata Laluan Rasmi.",
                 userId: "ID Pengguna", userIdPh: "Masukkan ID Pengguna",
                 password: "Kata Laluan", passwordPh: "Masukkan kata laluan",
-                loginBtn: "Log Masuk Portal",
-                noteTitle: "Nota Penting:",
-                noteBody: "Gunakan ID unik pegawai anda (cth: dr_ita) dan kata laluan yang diberikan oleh Pejabat TDP 1.",
+                loginBtn: "Sahkan & Masuk Sistem",
+                noteTitle: "Kawalan Keselamatan Rasmi:",
+                noteBody: "Akses terhad kepada Pegawai Perubatan PPTUK dan Pentadbir Rasmi sahaja. Gunakan ID pegawai anda (cth: dr_ita) dan kata laluan yang diberikan oleh Pejabat TDP 1.",
                 officerPortal: "Portal Pegawai Perubatan (PPTUK)",
                 officerSub: "Hantar sehingga 4+ rekod sesi kehadiran seminggu & jana Log Book bulanan kepada TDP 1.",
                 month: "Bulan:",
@@ -485,15 +661,15 @@
             },
             en: {
                 langBtn: "Bahasa Melayu",
-                appSub: "Selangor State Health Department | Official Clinical Duty Portal",
+                appSub: "HTPN Kajang Clinical Duty Implementation Portal",
                 login: "Log In", logout: "Log Out",
-                loginTitle: "PPTUK Portal Login",
-                loginSub: "Please enter the User ID and password you were given.",
+                loginTitle: "Officer Login",
+                loginSub: "Please enter your Clinical User ID and Official Password.",
                 userId: "User ID", userIdPh: "Enter User ID",
                 password: "Password", passwordPh: "Enter password",
-                loginBtn: "Log In to Portal",
-                noteTitle: "Important Note:",
-                noteBody: "Use your unique officer ID (e.g. dr_ita) and the password issued by the TDP 1 Office.",
+                loginBtn: "Verify & Enter System",
+                noteTitle: "Official Security Control:",
+                noteBody: "Access is restricted to PPTUK Medical Officers and Official Administrators only. Use your officer ID (e.g. dr_ita) and the password issued by the TDP 1 Office.",
                 officerPortal: "Medical Officer Portal (PPTUK)",
                 officerSub: "Record up to 4+ attendance sessions a week and generate the monthly Log Book for TDP 1.",
                 month: "Month:",
@@ -822,13 +998,11 @@
 
         // ================= Tab Switching =================
         function switchTab(tab) {
-            const active = "px-4 py-2 bg-cobalt-900 text-white font-bold text-xs rounded shadow";
-            const inactive = "px-4 py-2 bg-gray-200 text-gray-700 font-bold text-xs rounded hover:bg-gray-300 transition";
             const isAtt = tab === 'attendance';
             document.getElementById('tab_content_attendance').classList.toggle('hidden', !isAtt);
             document.getElementById('tab_content_logbook').classList.toggle('hidden', isAtt);
-            document.getElementById('btn_tab_att').className = isAtt ? active : inactive;
-            document.getElementById('btn_tab_lb').className = isAtt ? inactive : active;
+            document.getElementById('btn_tab_att').classList.toggle('is-active', isAtt);
+            document.getElementById('btn_tab_lb').classList.toggle('is-active', !isAtt);
             if (isAtt) pads.att.resize(); else { pads.lb.resize(); recalculateLogbook(); }
         }
 
