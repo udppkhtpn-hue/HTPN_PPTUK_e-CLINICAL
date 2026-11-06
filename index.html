@@ -395,7 +395,7 @@
                 </div>
             </div>
 
-            <!-- TAB B: MONTHLY LOG BOOK & SUBMISSION TO TDP 1 -->
+            <!-- TAB B: MONTHLY LOG BOOK & SUBMISSION TO TPP 1 -->
             <div id="tab_content_logbook" class="hidden">
                 <div class="card p-6 md:p-8 space-y-8">
                     <span class="ribbon">Lampiran A / Laporan Bulanan</span>
@@ -452,7 +452,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col items-end gap-2 lg:max-w-xs">
-                            <span class="scribble">hantar ke TDP 1 →</span>
+                            <span class="scribble">hantar ke TPP 1 →</span>
                             <button onclick="submitLogbookToDeputyDirector()" id="lb_submit_btn" class="btn btn-red py-4 px-6 w-full lg:w-auto">
                                 <i class="fas fa-paper-plane"></i> <span data-i18n="submitBtn"></span>
                             </button>
@@ -487,7 +487,7 @@
         <div id="view_admin_dashboard" class="hidden space-y-10">
             <div class="card p-6 md:p-8" style="background:var(--blue);color:#fff">
                 <span class="ribbon yellow" data-i18n="adminBadge"></span>
-                <div class="giant-outline absolute right-4 bottom-0 text-[90px] hidden md:block" style="-webkit-text-stroke-color:rgba(255,255,255,.18)">TDP 1</div>
+                <div class="giant-outline absolute right-4 bottom-0 text-[90px] hidden md:block" style="-webkit-text-stroke-color:rgba(255,255,255,.18)">TPP 1</div>
                 <div class="relative flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mt-2">
                     <div>
                         <h2 class="h-display text-2xl md:text-3xl" data-i18n="adminTitle"></h2>
@@ -583,9 +583,9 @@
                 password: "Kata Laluan", passwordPh: "Masukkan kata laluan",
                 loginBtn: "Sahkan & Masuk Sistem",
                 noteTitle: "Kawalan Keselamatan Rasmi:",
-                noteBody: "Akses terhad kepada Pegawai Perubatan PPTUK dan Pentadbir Rasmi sahaja. Gunakan ID pegawai anda (cth: dr_ita) dan kata laluan yang diberikan oleh Pejabat TDP 1.",
+                noteBody: "Akses terhad kepada Pegawai Perubatan PPTUK dan Pentadbir Rasmi sahaja. Gunakan ID pegawai anda dan kata laluan yang diberikan oleh Pejabat TPP 1.",
                 officerPortal: "Portal Pegawai Perubatan (PPTUK)",
-                officerSub: "Hantar sehingga 4+ rekod sesi kehadiran seminggu & jana Log Book bulanan kepada TDP 1.",
+                officerSub: "Hantar sehingga 4+ rekod sesi kehadiran seminggu & jana Log Book bulanan kepada TPP 1.",
                 month: "Bulan:",
                 tabAtt: "Log Kehadiran (Sesi)",
                 tabLb: "Log Book & Hantar (Lampiran A)",
@@ -632,7 +632,7 @@
                 thAchievement: "Pencapaian", thStatus: "Status", thPdf: "Dokumen PDF",
                 thOfficerId: "ID Pegawai", thOfficerName: "Nama Pegawai",
                 noSubmissions: "Belum ada penyerahan.", viewPdf: "Lihat PDF", sessionsShort: "sesi",
-                adminBadge: "Dashboard Pentadbir (TDP 1)",
+                adminBadge: "Dashboard Pentadbir (TPP 1)",
                 adminTitle: "Pemantauan Aktiviti Klinikal & Pematuhan PPTUK",
                 adminEmail: "Emel Pentadbir: ferwahn@moh.gov.my",
                 allMonths: "Semua Bulan", reloadData: "Segar Semula Data",
@@ -650,9 +650,9 @@
                 confirmDelete: "Padam sesi ini secara kekal dari rekod?",
                 noSessionsForMonth: "Tiada sesi kehadiran bagi {month}. Sila rekodkan sekurang-kurangnya satu sesi.",
                 confirmResubmit: "Anda telah menghantar Log Book bagi {month}. Hantar semula versi terkini?",
-                confirmSubmit: "Hantar Log Book {month} ({n} sesi) kepada TDP 1?",
+                confirmSubmit: "Hantar Log Book {month} ({n} sesi) kepada TPP 1?",
                 processing: "Memproses",
-                processingMsg: "Menjana PDF dan menghantar emel kepada TDP 1. Sila tunggu...",
+                processingMsg: "Menjana PDF dan menghantar emel kepada TPP 1. Sila tunggu...",
                 submitted: "Berjaya Dihantar",
                 submittedMsg: "Log Book Lampiran A ({id}) telah dihantar kepada Timbalan Pengarah Perubatan 1. Pencapaian: {pct}.",
                 submitError: "Ralat Penghantaran",
@@ -669,9 +669,9 @@
                 password: "Password", passwordPh: "Enter password",
                 loginBtn: "Verify & Enter System",
                 noteTitle: "Official Security Control:",
-                noteBody: "Access is restricted to PPTUK Medical Officers and Official Administrators only. Use your officer ID (e.g. dr_ita) and the password issued by the TDP 1 Office.",
+                noteBody: "Access is restricted to PPTUK Medical Officers and Official Administrators only. Use your officer ID and the password issued by the TPP 1 Office.",
                 officerPortal: "Medical Officer Portal (PPTUK)",
-                officerSub: "Record up to 4+ attendance sessions a week and generate the monthly Log Book for TDP 1.",
+                officerSub: "Record up to 4+ attendance sessions a week and generate the monthly Log Book for TPP 1.",
                 month: "Month:",
                 tabAtt: "Attendance Log (Sessions)",
                 tabLb: "Log Book & Submit (Appendix A)",
@@ -718,7 +718,7 @@
                 thAchievement: "Achievement", thStatus: "Status", thPdf: "PDF Document",
                 thOfficerId: "Officer ID", thOfficerName: "Officer Name",
                 noSubmissions: "No submissions yet.", viewPdf: "View PDF", sessionsShort: "sessions",
-                adminBadge: "Admin Dashboard (TDP 1)",
+                adminBadge: "Admin Dashboard (TPP 1)",
                 adminTitle: "PPTUK Clinical Activity & Compliance Monitoring",
                 adminEmail: "Admin Email: ferwahn@moh.gov.my",
                 allMonths: "All Months", reloadData: "Reload Data",
@@ -736,9 +736,9 @@
                 confirmDelete: "Permanently delete this session from the records?",
                 noSessionsForMonth: "No attendance sessions for {month}. Please record at least one session.",
                 confirmResubmit: "You have already submitted the Log Book for {month}. Submit the latest version again?",
-                confirmSubmit: "Submit the {month} Log Book ({n} sessions) to TDP 1?",
+                confirmSubmit: "Submit the {month} Log Book ({n} sessions) to TPP 1?",
                 processing: "Processing",
-                processingMsg: "Generating the PDF and emailing TDP 1. Please wait...",
+                processingMsg: "Generating the PDF and emailing TPP 1. Please wait...",
                 submitted: "Submitted",
                 submittedMsg: "Appendix A Log Book ({id}) has been sent to the Deputy Medical Director 1. Achievement: {pct}.",
                 submitError: "Submission Error",
