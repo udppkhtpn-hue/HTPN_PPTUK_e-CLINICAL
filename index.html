@@ -46,18 +46,22 @@
                 </div>
                 <div>
                     <h1 class="text-lg md:text-xl font-bold tracking-tight">PPTUK HTPN e-CLINICAL PORTAL</h1>
-                    <p class="text-xs text-amber-200">Jabatan Kesihatan Negeri Selangor | Portal Rasmi Tugas Klinikal</p>
+                    <p class="text-xs text-amber-200" data-i18n="appSub"></p>
                 </div>
             </div>
-            
-            <!-- Dynamic Nav User Info & Universal Login/Logout -->
+
+            <!-- Language toggle, user info & login/logout -->
             <div class="flex items-center gap-3">
+                <button id="lang_toggle_btn" onclick="toggleLanguage()" title="Language / Bahasa"
+                        class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded border border-white/30 transition flex items-center gap-2">
+                    <i class="fas fa-language"></i> <span data-i18n="langBtn"></span>
+                </button>
                 <div id="nav_user_badge" class="hidden items-center gap-2 bg-cobalt-800 px-3 py-1.5 rounded-full text-xs font-mono border border-cobalt-600">
                     <i class="fas fa-user-shield text-amber-400"></i>
-                    <span id="nav_display_name">Pegawai</span>
+                    <span id="nav_display_name"></span>
                 </div>
-                <button id="nav_auth_btn" onclick="openLoginModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-cobalt-900 font-bold text-xs rounded shadow transition flex items-center gap-2">
-                    <i class="fas fa-sign-in-alt"></i> <span id="auth_btn_label">Log Masuk</span>
+                <button id="nav_auth_btn" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-cobalt-900 font-bold text-xs rounded shadow transition flex items-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i> <span id="auth_btn_label"></span>
                 </button>
             </div>
         </div>
@@ -66,154 +70,132 @@
     <!-- Main Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
 
-        <!-- Apps Script API Config Bar -->
-        <div class="mb-6 p-4 border-2 border-dashed border-sepia-400 bg-cream-50 rounded text-xs flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-plug text-cobalt-600 text-sm"></i>
-                <span class="font-mono font-bold text-sepia-900">Google Apps Script Backend API:</span>
-            </div>
-            <div class="flex-1 w-full flex gap-2">
-                <input type="text" id="api_web_app_url" 
-                       value="" 
-                       placeholder="https://script.google.com/macros/s/.../exec" 
-                       class="w-full font-mono text-xs p-2 border border-sepia-400 rounded bg-white text-sepia-900">
-                <button onclick="saveApiUrl()" class="px-3 py-1 bg-cobalt-800 text-white font-mono rounded hover:bg-black transition">
-                    Simpan
-                </button>
-            </div>
-        </div>
-
-        <!-- VIEW 1: LOGIN WALL (Displayed when unauthenticated) -->
+        <!-- VIEW 1: LOGIN -->
         <div id="view_login" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg border border-sepia-100 my-12">
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-cobalt-900 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow">
                     <i class="fas fa-lock"></i>
                 </div>
-                <h2 class="text-xl font-bold text-cobalt-900">Log Masuk Portal PPTUK</h2>
-                <p class="text-xs text-gray-500 mt-1">Sila masukkan ID Pengguna & kata laluan yang diberikan.</p>
+                <h2 class="text-xl font-bold text-cobalt-900" data-i18n="loginTitle"></h2>
+                <p class="text-xs text-gray-500 mt-1" data-i18n="loginSub"></p>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">ID Pengguna</label>
-                    <input type="text" id="login_user_id" required 
-                           placeholder="Masukkan ID Pengguna" 
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1" data-i18n="userId"></label>
+                    <input type="text" id="login_user_id" required data-i18n-ph="userIdPh"
                            class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cobalt-600 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Kata Laluan</label>
-                    <input type="password" id="login_password" required 
-                           placeholder="Masukkan kata laluan" 
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1" data-i18n="password"></label>
+                    <input type="password" id="login_password" required data-i18n-ph="passwordPh"
                            class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cobalt-600 focus:outline-none">
                 </div>
-                <button type="submit" id="login_submit_btn" class="w-full py-3 bg-cobalt-900 hover:bg-cobalt-800 text-white font-bold rounded-lg shadow transition text-sm disabled:opacity-60">
-                    Log Masuk Portal
-                </button>
+                <button type="submit" id="login_submit_btn" class="w-full py-3 bg-cobalt-900 hover:bg-cobalt-800 text-white font-bold rounded-lg shadow transition text-sm disabled:opacity-60" data-i18n="loginBtn"></button>
             </form>
             <div class="mt-6 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
-                <p class="font-bold"><i class="fas fa-info-circle mr-1"></i> Nota Penting:</p>
-                <p class="mt-1">Gunakan ID unik pegawai anda (cth: dr_ita) dan kata laluan yang diberikan oleh Pejabat TDP 1.</p>
+                <p class="font-bold"><i class="fas fa-info-circle mr-1"></i> <span data-i18n="noteTitle"></span></p>
+                <p class="mt-1" data-i18n="noteBody"></p>
             </div>
         </div>
 
-        <!-- VIEW 2: PPTUK OFFICER PORTAL (Attendance Log & Monthly Log Book) -->
+        <!-- VIEW 2: OFFICER PORTAL -->
         <div id="view_officer_portal" class="hidden space-y-6">
-            
+
             <!-- Officer Welcome Banner -->
             <div class="bg-white p-6 rounded-xl shadow border-l-4 border-cobalt-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded">Portal Pegawai Perubatan (PPTUK)</span>
-                    <h2 id="welcome_officer_name" class="text-xl font-bold text-cobalt-900 mt-1">Dr. Nama Pegawai</h2>
-                    <p class="text-xs text-gray-500">Hantar sehingga 4+ rekod sesi kehadiran seminggu & jana Log Book bulanan kepada TDP 1.</p>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded" data-i18n="officerPortal"></span>
+                    <h2 id="welcome_officer_name" class="text-xl font-bold text-cobalt-900 mt-1"></h2>
+                    <p class="text-xs text-gray-500" data-i18n="officerSub"></p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="flex items-center gap-2 mr-2">
-                        <label for="report_month_select" class="text-[11px] font-bold text-gray-600">Bulan:</label>
+                        <label for="report_month_select" class="text-[11px] font-bold text-gray-600" data-i18n="month"></label>
                         <select id="report_month_select" onchange="onMonthChange()" class="p-2 text-xs border rounded bg-white font-bold"></select>
                     </div>
                     <button onclick="switchTab('attendance')" id="btn_tab_att" class="px-4 py-2 bg-cobalt-900 text-white font-bold text-xs rounded shadow">
-                        <i class="fas fa-clipboard-check mr-1"></i> Log Kehadiran (Sesi)
+                        <i class="fas fa-clipboard-check mr-1"></i> <span data-i18n="tabAtt"></span>
                     </button>
                     <button onclick="switchTab('logbook')" id="btn_tab_lb" class="px-4 py-2 bg-gray-200 text-gray-700 font-bold text-xs rounded hover:bg-gray-300 transition">
-                        <i class="fas fa-book mr-1"></i> Log Book & Hantar (Lampiran A)
+                        <i class="fas fa-book mr-1"></i> <span data-i18n="tabLb"></span>
                     </button>
                 </div>
             </div>
 
-            <!-- TAB A: LOG KEHADIRAN (Per-Session Attendance & Verification) -->
+            <!-- TAB A: ATTENDANCE LOG -->
             <div id="tab_content_attendance" class="space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
+
                     <!-- Left: Attendance Form -->
                     <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 lg:col-span-1 space-y-4">
                         <div class="border-b pb-3">
                             <h3 class="font-bold text-cobalt-900 text-sm flex items-center gap-2">
-                                <i class="fas fa-user-clock text-amber-500"></i> Rekod Sesi Tugas Klinikal Baru
+                                <i class="fas fa-user-clock text-amber-500"></i> <span data-i18n="newSession"></span>
                             </h3>
-                            <p class="text-xs text-gray-500 mt-0.5">Isi setiap kali anda bertugas klinikal (hingga 4x seminggu).</p>
+                            <p class="text-xs text-gray-500 mt-0.5" data-i18n="newSessionSub"></p>
                         </div>
 
                         <form id="attendance_form" onsubmit="handleAttendanceSubmit(event)" class="space-y-3 text-xs">
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1">Tarikh Bertugas</label>
+                                <label class="block font-bold text-gray-700 mb-1" data-i18n="dutyDate"></label>
                                 <input type="date" id="att_date" required class="w-full p-2 border rounded">
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1">Mula</label>
+                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="start"></label>
                                     <input type="time" id="att_start" value="08:00" required oninput="autoCalcHours()" class="w-full p-2 border rounded">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1">Tamat</label>
+                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="end"></label>
                                     <input type="time" id="att_end" value="13:00" required oninput="autoCalcHours()" class="w-full p-2 border rounded">
                                 </div>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1">Jumlah Jam Klinikal</label>
+                                <label class="block font-bold text-gray-700 mb-1" data-i18n="clinicalHours"></label>
                                 <input type="number" step="0.25" min="0.25" max="24" id="att_hours" value="5" required class="w-full p-2 border rounded bg-gray-50 font-bold text-cobalt-900">
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1">Kategori Aktiviti (Skop)</label>
+                                <label class="block font-bold text-gray-700 mb-1" data-i18n="activity"></label>
+                                <!-- Option values stay in Malay: they are what gets saved to the sheet and PDF -->
                                 <select id="att_activity" class="w-full p-2 border rounded">
-                                    <option value="3.1 Klinik Pakar / Pesakit Luar">3.1 Klinik Pakar / Pesakit Luar</option>
-                                    <option value="3.2 Pengurusan Pesakit Wad & Discaj">3.2 Pengurusan Pesakit Wad & Ringkasan Discaj</option>
-                                    <option value="3.3 Jabatan Kecemasan & Trauma">3.3 Jabatan Kecemasan & Trauma</option>
-                                    <option value="Aktiviti Klinikal Lain (Customized)">Aktiviti Klinikal Lain (Customized)</option>
+                                    <option value="3.1 Klinik Pakar / Pesakit Luar" data-i18n="act31"></option>
+                                    <option value="3.2 Pengurusan Pesakit Wad & Discaj" data-i18n="act32"></option>
+                                    <option value="3.3 Jabatan Kecemasan & Trauma" data-i18n="act33"></option>
+                                    <option value="Aktiviti Klinikal Lain (Customized)" data-i18n="actOther"></option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700 mb-1">Perincian / Kes / Wad</label>
-                                <textarea id="att_details" rows="2" placeholder="Cth: Wad Melur 4, 15 pesakit" class="w-full p-2 border rounded" required></textarea>
+                                <label class="block font-bold text-gray-700 mb-1">
+                                    <span data-i18n="details"></span> <span class="font-normal text-gray-400" data-i18n="optional"></span>
+                                </label>
+                                <textarea id="att_details" rows="2" data-i18n-ph="detailsPh" class="w-full p-2 border rounded"></textarea>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1">Nama Penyelia / KAJ</label>
-                                    <input type="text" id="att_supervisor" placeholder="Dr. Penyelia" required class="w-full p-2 border rounded">
+                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="supName"></label>
+                                    <input type="text" id="att_supervisor" data-i18n-ph="supNamePh" required class="w-full p-2 border rounded">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-gray-700 mb-1">Jawatan Penyelia</label>
-                                    <input type="text" id="att_sup_role" placeholder="Ketua Jabatan / Pakar" required class="w-full p-2 border rounded">
+                                    <label class="block font-bold text-gray-700 mb-1" data-i18n="supRole"></label>
+                                    <input type="text" id="att_sup_role" data-i18n-ph="supRolePh" required class="w-full p-2 border rounded">
                                 </div>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-gray-700 mb-1">Pautan Bukti / Dokumen Asal (URL)</label>
-                                <input type="url" id="att_verif_link" placeholder="https://drive.google.com/..." class="w-full p-2 border rounded">
                             </div>
 
                             <!-- Touchscreen Finger Signature Pad -->
                             <div>
                                 <label class="block font-bold text-gray-700 mb-1 flex justify-between items-center">
-                                    <span>Tandatangan Sentuhan Penyelia (Touchscreen)</span>
-                                    <button type="button" onclick="clearSignaturePad()" class="text-red-600 hover:underline text-[10px]">Padam</button>
+                                    <span data-i18n="sigLabel"></span>
+                                    <button type="button" onclick="pads.att.clear()" class="text-red-600 hover:underline text-[10px]" data-i18n="clear"></button>
                                 </label>
                                 <div class="border rounded bg-white overflow-hidden">
                                     <canvas id="signature_canvas" class="signature-pad w-full h-28"></canvas>
                                 </div>
-                                <p class="text-[10px] text-gray-500 mt-1">Guna jari / stylus untuk tandatangan di atas skrin.</p>
+                                <p class="text-[10px] text-gray-500 mt-1" data-i18n="sigHint"></p>
                             </div>
 
                             <button type="submit" id="att_submit_btn" class="w-full py-2.5 bg-cobalt-900 hover:bg-cobalt-800 text-white font-bold rounded shadow transition disabled:opacity-60">
-                                <i class="fas fa-check-circle mr-1"></i> Simpan Sesi Kehadiran
+                                <i class="fas fa-check-circle mr-1"></i> <span data-i18n="saveSession"></span>
                             </button>
                         </form>
                     </div>
@@ -222,29 +204,25 @@
                     <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 lg:col-span-2 space-y-4">
                         <div class="flex justify-between items-center border-b pb-3">
                             <div>
-                                <h3 class="font-bold text-cobalt-900 text-sm">Senarai Sesi Kehadiran Direkodkan</h3>
-                                <p class="text-xs text-gray-500">Sesi yang telah ditandatangani dan disahkan bagi <b id="att_month_label">bulan ini</b>.</p>
+                                <h3 class="font-bold text-cobalt-900 text-sm" data-i18n="sessionsTitle"></h3>
+                                <p class="text-xs text-gray-500"><span data-i18n="sessionsSub"></span> <b id="att_month_label"></b>.</p>
                             </div>
-                            <span id="att_count_badge" class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded">0 Sesi</span>
+                            <span id="att_count_badge" class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded"></span>
                         </div>
 
                         <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead class="bg-gray-100 sticky top-0 text-gray-700 uppercase">
                                     <tr>
-                                        <th class="p-2 border">Tarikh</th>
-                                        <th class="p-2 border">Masa & Jam</th>
-                                        <th class="p-2 border">Aktiviti</th>
-                                        <th class="p-2 border">Penyelia</th>
-                                        <th class="p-2 border">Pautan Bukti</th>
-                                        <th class="p-2 border text-center">Tindakan</th>
+                                        <th class="p-2 border" data-i18n="thDate"></th>
+                                        <th class="p-2 border" data-i18n="thTime"></th>
+                                        <th class="p-2 border" data-i18n="thActivity"></th>
+                                        <th class="p-2 border" data-i18n="thSupervisor"></th>
+                                        <th class="p-2 border" data-i18n="thSignature"></th>
+                                        <th class="p-2 border text-center" data-i18n="thAction"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="attendance_table_body">
-                                    <tr>
-                                        <td colspan="6" class="p-6 text-center text-gray-400 italic">Tiada sesi kehadiran direkodkan lagi. Sila isi borang di sebelah.</td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="attendance_table_body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -256,13 +234,13 @@
                 <div class="bg-white p-6 rounded-xl shadow border border-sepia-100 space-y-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
                         <div>
-                            <h3 class="font-bold text-cobalt-900 text-base">Borang Perlaksanaan Tugas Klinikal (Lampiran A)</h3>
-                            <p class="text-xs text-gray-500">Himpunan rumusan bulanan untuk dihantar kepada Timbalan Pengarah Perubatan 1.</p>
+                            <h3 class="font-bold text-cobalt-900 text-base" data-i18n="lbTitle"></h3>
+                            <p class="text-xs text-gray-500" data-i18n="lbSub"></p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-xs text-gray-600">Bulan Laporan: <b id="lb_month_label">-</b></span>
+                            <span class="text-xs text-gray-600"><span data-i18n="reportMonth"></span> <b id="lb_month_label">-</b></span>
                             <button onclick="loadMySessions()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-bold rounded">
-                                <i class="fas fa-sync-alt"></i> Kemaskini
+                                <i class="fas fa-sync-alt"></i> <span data-i18n="refresh"></span>
                             </button>
                         </div>
                     </div>
@@ -270,52 +248,62 @@
                     <!-- Summary Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                            <p class="text-xs text-blue-700 font-bold uppercase">Jumlah Sesi</p>
+                            <p class="text-xs text-blue-700 font-bold uppercase" data-i18n="totalSessions"></p>
                             <p id="sum_total_sessions" class="text-2xl font-black text-blue-900 mt-1">0</p>
                         </div>
                         <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
-                            <p class="text-xs text-indigo-700 font-bold uppercase">Jumlah Jam Klinikal</p>
-                            <p id="sum_total_hours" class="text-2xl font-black text-indigo-900 mt-1">0.0 Jam</p>
+                            <p class="text-xs text-indigo-700 font-bold uppercase" data-i18n="totalHours"></p>
+                            <p id="sum_total_hours" class="text-2xl font-black text-indigo-900 mt-1">0.0</p>
                         </div>
                         <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                            <p class="text-xs text-amber-800 font-bold uppercase">Pencapaian Target (&ge;30%)</p>
+                            <p class="text-xs text-amber-800 font-bold uppercase" data-i18n="target"></p>
                             <p id="sum_compliance_pct" class="text-2xl font-black text-amber-900 mt-1">0.0%</p>
                         </div>
                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-lg">
-                            <p class="text-xs text-emerald-700 font-bold uppercase">Status Pematuhan</p>
-                            <p id="sum_status_text" class="text-sm font-bold text-emerald-900 mt-2">MENUNGGU DATA</p>
+                            <p class="text-xs text-emerald-700 font-bold uppercase" data-i18n="complianceStatus"></p>
+                            <p id="sum_status_text" class="text-sm font-bold text-emerald-900 mt-2"></p>
                         </div>
                     </div>
 
                     <!-- Submission Action -->
                     <div class="bg-cream-50 border-2 border-dashed border-amber-400 p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
                         <div>
-                            <h4 class="font-bold text-sepia-900 text-sm">Hantar Rumusan Lampiran A kepada Timbalan Pengarah Perubatan 1</h4>
-                            <p class="text-xs text-gray-600 mt-1">Emel rasmi akan dihantar ke <b>ferwahn@moh.gov.my</b> beserta salinan PDF rasmi tersimpan dalam Google Drive.</p>
+                            <h4 class="font-bold text-sepia-900 text-sm" data-i18n="submitTitle"></h4>
+                            <p class="text-xs text-gray-600 mt-1" data-i18n-html="submitSub"></p>
+
+                            <!-- Officer's initial / signature for the Lampiran A PDF -->
+                            <div class="mt-4 max-w-sm text-xs">
+                                <label class="font-bold text-gray-700 mb-1 flex justify-between items-center">
+                                    <span data-i18n="lbSigLabel"></span>
+                                    <button type="button" onclick="pads.lb.clear()" class="text-red-600 hover:underline text-[10px]" data-i18n="clear"></button>
+                                </label>
+                                <div class="border rounded bg-white overflow-hidden">
+                                    <canvas id="lb_signature_canvas" class="signature-pad w-full h-24"></canvas>
+                                </div>
+                                <p class="text-[10px] text-gray-500 mt-1" data-i18n="lbSigHint"></p>
+                            </div>
                         </div>
                         <button onclick="submitLogbookToDeputyDirector()" id="lb_submit_btn" class="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-2 whitespace-nowrap disabled:opacity-60">
-                            <i class="fas fa-paper-plane"></i> Hantar Laporan &amp; Butiran Pengesahan
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="submitBtn"></span>
                         </button>
                     </div>
 
                     <!-- Officer's own submission history -->
                     <div class="space-y-2">
-                        <h4 class="font-bold text-cobalt-900 text-sm">Sejarah Penyerahan Saya</h4>
+                        <h4 class="font-bold text-cobalt-900 text-sm" data-i18n="historyTitle"></h4>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead class="bg-gray-100 text-gray-700 uppercase">
                                     <tr>
-                                        <th class="p-2 border">Tarikh / Masa</th>
-                                        <th class="p-2 border">Bulan</th>
-                                        <th class="p-2 border">Sesi</th>
-                                        <th class="p-2 border">Jam Klinikal</th>
-                                        <th class="p-2 border">Pencapaian</th>
+                                        <th class="p-2 border" data-i18n="thDateTime"></th>
+                                        <th class="p-2 border" data-i18n="thMonth"></th>
+                                        <th class="p-2 border" data-i18n="thSessions"></th>
+                                        <th class="p-2 border" data-i18n="thHours"></th>
+                                        <th class="p-2 border" data-i18n="thAchievement"></th>
                                         <th class="p-2 border text-center">PDF</th>
                                     </tr>
                                 </thead>
-                                <tbody id="my_submissions_table_body">
-                                    <tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Belum ada penyerahan.</td></tr>
-                                </tbody>
+                                <tbody id="my_submissions_table_body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -324,20 +312,18 @@
 
         </div>
 
-        <!-- VIEW 3: ADMIN DASHBOARD (Deputy Director View for ferwahn@moh.gov.my) -->
+        <!-- VIEW 3: ADMIN DASHBOARD -->
         <div id="view_admin_dashboard" class="hidden space-y-6">
             <div class="bg-cobalt-900 text-white p-6 rounded-xl shadow flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span class="bg-amber-500 text-cobalt-900 text-xs font-bold px-2.5 py-1 rounded uppercase">Dashboard Pentadbir (TDP 1)</span>
-                    <h2 class="text-xl font-bold mt-1">Pemantauan Aktiviti Klinikal & Pematuhan PPTUK</h2>
-                    <p class="text-xs text-amber-200">Emel Pentadbir: ferwahn@moh.gov.my</p>
+                    <span class="bg-amber-500 text-cobalt-900 text-xs font-bold px-2.5 py-1 rounded uppercase" data-i18n="adminBadge"></span>
+                    <h2 class="text-xl font-bold mt-1" data-i18n="adminTitle"></h2>
+                    <p class="text-xs text-amber-200" data-i18n="adminEmail"></p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <select id="admin_month_filter" onchange="renderAdminTable()" class="p-2 text-xs rounded text-cobalt-900 font-bold">
-                        <option value="">Semua Bulan</option>
-                    </select>
+                    <select id="admin_month_filter" onchange="renderAdminTable()" class="p-2 text-xs rounded text-cobalt-900 font-bold"></select>
                     <button onclick="loadAdminData()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded border border-white/20 transition">
-                        <i class="fas fa-sync-alt mr-1"></i> Segar Semula Data
+                        <i class="fas fa-sync-alt mr-1"></i> <span data-i18n="reloadData"></span>
                     </button>
                 </div>
             </div>
@@ -345,41 +331,37 @@
             <!-- Admin Stats Overview -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Jumlah Laporan Diterima</p>
+                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="reportsReceived"></p>
                     <p id="admin_total_reports" class="text-3xl font-black text-cobalt-900 mt-2">0</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Mematuhi Mandatori (&ge;30%)</p>
+                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="compliantCount"></p>
                     <p id="admin_compliant_count" class="text-3xl font-black text-emerald-600 mt-2">0</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Belum Cukup (&lt;30%)</p>
+                    <p class="text-xs text-gray-500 font-bold uppercase" data-i18n="notCompliantCount"></p>
                     <p id="admin_noncompliant_count" class="text-3xl font-black text-red-600 mt-2">0</p>
                 </div>
             </div>
 
             <!-- Admin Submissions Table -->
             <div class="bg-white p-6 rounded-xl shadow border space-y-4">
-                <h3 class="font-bold text-cobalt-900 text-sm">Senarai Log Book Lampiran A Diterima</h3>
+                <h3 class="font-bold text-cobalt-900 text-sm" data-i18n="adminTableTitle"></h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead class="bg-gray-100 text-gray-700 uppercase">
                             <tr>
-                                <th class="p-3 border">Tarikh / Masa</th>
-                                <th class="p-3 border">ID Pegawai</th>
-                                <th class="p-3 border">Nama Pegawai</th>
-                                <th class="p-3 border">Bulan</th>
-                                <th class="p-3 border">Jam Klinikal</th>
-                                <th class="p-3 border">Pencapaian</th>
-                                <th class="p-3 border">Status</th>
-                                <th class="p-3 border text-center">Dokumen PDF</th>
+                                <th class="p-3 border" data-i18n="thDateTime"></th>
+                                <th class="p-3 border" data-i18n="thOfficerId"></th>
+                                <th class="p-3 border" data-i18n="thOfficerName"></th>
+                                <th class="p-3 border" data-i18n="thMonth"></th>
+                                <th class="p-3 border" data-i18n="thHours"></th>
+                                <th class="p-3 border" data-i18n="thAchievement"></th>
+                                <th class="p-3 border" data-i18n="thStatus"></th>
+                                <th class="p-3 border text-center" data-i18n="thPdf"></th>
                             </tr>
                         </thead>
-                        <tbody id="admin_submissions_table_body">
-                            <tr>
-                                <td colspan="8" class="p-6 text-center text-gray-400 italic">Tiada laporan diterima lagi.</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="admin_submissions_table_body"></tbody>
                     </table>
                 </div>
             </div>
@@ -389,15 +371,15 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t py-4 text-center text-xs text-gray-500 mt-12">
-        <p>PPTUK HTPN e-CLINICAL PORTAL &copy; 2026 | Jabatan Kesihatan Negeri Selangor</p>
-        <p class="text-[10px] text-gray-400 mt-1">Sokongan teknikal: ferwahn@moh.gov.my</p>
+        <p>PPTUK HTPN e-CLINICAL PORTAL &copy; 2026 | <span data-i18n="footerOrg"></span></p>
+        <p class="text-[10px] text-gray-400 mt-1" data-i18n="footerSupport"></p>
     </footer>
 
-    <!-- Custom Notification Modal -->
+    <!-- Notification Modal -->
     <div id="modal_notification" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white max-w-sm w-full p-6 rounded-xl shadow-xl text-center space-y-4">
             <div id="modal_icon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl"></div>
-            <h3 id="modal_title" class="font-bold text-gray-900 text-base">Notifikasi Sistem</h3>
+            <h3 id="modal_title" class="font-bold text-gray-900 text-base"></h3>
             <p id="modal_message" class="text-xs text-gray-600"></p>
             <button onclick="closeModal()" class="w-full py-2.5 bg-cobalt-900 text-white font-bold rounded text-xs">OK</button>
         </div>
@@ -405,32 +387,276 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // ================= Global App State =================
+        // ================= Configuration =================
         const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwhctKM55yVR3u7xg15jka-w8zxwljhBpYkA56NWvFppJ4DYB95Wli8vrxyoaLVCHPAMw/exec";
-        const BULAN_MS = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai",
-                          "Ogos", "September", "Oktober", "November", "Disember"];
         const STANDARD_MONTHLY_HOURS = 160;
+        const MONTHS = {
+            ms: ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"],
+            en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        };
 
+        // ================= Translations (Bahasa Melayu / English) =================
+        const I18N = {
+            ms: {
+                langBtn: "English",
+                appSub: "Jabatan Kesihatan Negeri Selangor | Portal Rasmi Tugas Klinikal",
+                login: "Log Masuk", logout: "Log Keluar",
+                loginTitle: "Log Masuk Portal PPTUK",
+                loginSub: "Sila masukkan ID Pengguna & kata laluan yang diberikan.",
+                userId: "ID Pengguna", userIdPh: "Masukkan ID Pengguna",
+                password: "Kata Laluan", passwordPh: "Masukkan kata laluan",
+                loginBtn: "Log Masuk Portal",
+                noteTitle: "Nota Penting:",
+                noteBody: "Gunakan ID unik pegawai anda (cth: dr_ita) dan kata laluan yang diberikan oleh Pejabat TDP 1.",
+                officerPortal: "Portal Pegawai Perubatan (PPTUK)",
+                officerSub: "Hantar sehingga 4+ rekod sesi kehadiran seminggu & jana Log Book bulanan kepada TDP 1.",
+                month: "Bulan:",
+                tabAtt: "Log Kehadiran (Sesi)",
+                tabLb: "Log Book & Hantar (Lampiran A)",
+                newSession: "Rekod Sesi Tugas Klinikal Baru",
+                newSessionSub: "Isi setiap kali anda bertugas klinikal (hingga 4x seminggu).",
+                dutyDate: "Tarikh Bertugas", start: "Mula", end: "Tamat",
+                clinicalHours: "Jumlah Jam Klinikal",
+                activity: "Kategori Aktiviti (Skop)",
+                act31: "3.1 Klinik Pakar / Pesakit Luar",
+                act32: "3.2 Pengurusan Pesakit Wad & Ringkasan Discaj",
+                act33: "3.3 Jabatan Kecemasan & Trauma",
+                actOther: "Aktiviti Klinikal Lain (Customized)",
+                details: "Perincian / Kes / Wad", optional: "(pilihan)",
+                detailsPh: "Cth: Wad Melur 4, 15 pesakit",
+                supName: "Nama Penyelia / KAJ", supNamePh: "Dr. Penyelia",
+                supRole: "Jawatan Penyelia", supRolePh: "Ketua Jabatan / Pakar",
+                sigLabel: "Tandatangan Sentuhan Penyelia (Touchscreen)",
+                clear: "Padam",
+                sigHint: "Guna jari / stylus untuk tandatangan di atas skrin.",
+                saveSession: "Simpan Sesi Kehadiran",
+                sessionsTitle: "Senarai Sesi Kehadiran Direkodkan",
+                sessionsSub: "Sesi yang telah ditandatangani dan disahkan bagi",
+                sessionsCount: "{n} Sesi",
+                thDate: "Tarikh", thTime: "Masa & Jam", thActivity: "Aktiviti", thSupervisor: "Penyelia",
+                thSignature: "Tandatangan", thAction: "Tindakan",
+                noSessions: "Tiada sesi kehadiran direkodkan bagi bulan ini. Sila isi borang di sebelah.",
+                loadingSessions: "Memuatkan sesi...",
+                hoursUnit: "Jam", signed: "Ditandatangani", deleteSession: "Padam sesi",
+                lbTitle: "Borang Perlaksanaan Tugas Klinikal (Lampiran A)",
+                lbSub: "Himpunan rumusan bulanan untuk dihantar kepada Timbalan Pengarah Perubatan 1.",
+                reportMonth: "Bulan Laporan:", refresh: "Kemaskini",
+                totalSessions: "Jumlah Sesi", totalHours: "Jumlah Jam Klinikal",
+                target: "Pencapaian Target (≥30%)", complianceStatus: "Status Pematuhan",
+                waiting: "MENUNGGU DATA", compliant: "MEMATUHI (≥30%)", notCompliant: "BELUM CUKUP (<30%)",
+                compliantShort: "MEMATUHI", notCompliantShort: "BELUM CUKUP",
+                submitTitle: "Hantar Rumusan Lampiran A kepada Timbalan Pengarah Perubatan 1",
+                submitSub: "Emel rasmi akan dihantar ke <b>ferwahn@moh.gov.my</b> beserta salinan PDF rasmi tersimpan dalam Google Drive.",
+                submitBtn: "Hantar Laporan & Butiran Pengesahan",
+                lbSigLabel: "Tandatangan Ringkas (Paraf) Pegawai PPTUK",
+                lbSigHint: "Paraf anda akan dimasukkan ke dalam PDF Lampiran A di ruang \"Disediakan & Dihantar Oleh\".",
+                needLbSig: "Sila turunkan paraf anda pada ruang tandatangan Lampiran A sebelum menghantar.",
+                historyTitle: "Sejarah Penyerahan Saya",
+                thDateTime: "Tarikh / Masa", thMonth: "Bulan", thSessions: "Sesi", thHours: "Jam Klinikal",
+                thAchievement: "Pencapaian", thStatus: "Status", thPdf: "Dokumen PDF",
+                thOfficerId: "ID Pegawai", thOfficerName: "Nama Pegawai",
+                noSubmissions: "Belum ada penyerahan.", viewPdf: "Lihat PDF", sessionsShort: "sesi",
+                adminBadge: "Dashboard Pentadbir (TDP 1)",
+                adminTitle: "Pemantauan Aktiviti Klinikal & Pematuhan PPTUK",
+                adminEmail: "Emel Pentadbir: ferwahn@moh.gov.my",
+                allMonths: "Semua Bulan", reloadData: "Segar Semula Data",
+                reportsReceived: "Jumlah Laporan Diterima",
+                compliantCount: "Mematuhi Mandatori (≥30%)", notCompliantCount: "Belum Cukup (<30%)",
+                adminTableTitle: "Senarai Log Book Lampiran A Diterima",
+                noReports: "Tiada laporan diterima lagi.", loadingReports: "Memuat turun data log book...",
+                footerOrg: "Jabatan Kesihatan Negeri Selangor",
+                footerSupport: "Sokongan teknikal: ferwahn@moh.gov.my",
+                success: "Berjaya", warning: "Amaran", error: "Ralat", loginError: "Ralat Log Masuk",
+                welcome: "Selamat datang, {name}!",
+                needSig: "Sila dapatkan tandatangan penyelia pada ruang tandatangan sebelum menyimpan.",
+                badHours: "Jumlah jam klinikal tidak sah.",
+                sessionSaved: "Sesi kehadiran klinikal berjaya direkod dan ditandatangani!",
+                confirmDelete: "Padam sesi ini secara kekal dari rekod?",
+                noSessionsForMonth: "Tiada sesi kehadiran bagi {month}. Sila rekodkan sekurang-kurangnya satu sesi.",
+                confirmResubmit: "Anda telah menghantar Log Book bagi {month}. Hantar semula versi terkini?",
+                confirmSubmit: "Hantar Log Book {month} ({n} sesi) kepada TDP 1?",
+                processing: "Memproses",
+                processingMsg: "Menjana PDF dan menghantar emel kepada TDP 1. Sila tunggu...",
+                submitted: "Berjaya Dihantar",
+                submittedMsg: "Log Book Lampiran A ({id}) telah dihantar kepada Timbalan Pengarah Perubatan 1. Pencapaian: {pct}.",
+                submitError: "Ralat Penghantaran",
+                connError: "Gagal menghubungi pelayan backend. Sila semak sambungan internet.",
+                unknownError: "Ralat tidak diketahui."
+            },
+            en: {
+                langBtn: "Bahasa Melayu",
+                appSub: "Selangor State Health Department | Official Clinical Duty Portal",
+                login: "Log In", logout: "Log Out",
+                loginTitle: "PPTUK Portal Login",
+                loginSub: "Please enter the User ID and password you were given.",
+                userId: "User ID", userIdPh: "Enter User ID",
+                password: "Password", passwordPh: "Enter password",
+                loginBtn: "Log In to Portal",
+                noteTitle: "Important Note:",
+                noteBody: "Use your unique officer ID (e.g. dr_ita) and the password issued by the TDP 1 Office.",
+                officerPortal: "Medical Officer Portal (PPTUK)",
+                officerSub: "Record up to 4+ attendance sessions a week and generate the monthly Log Book for TDP 1.",
+                month: "Month:",
+                tabAtt: "Attendance Log (Sessions)",
+                tabLb: "Log Book & Submit (Appendix A)",
+                newSession: "Record New Clinical Duty Session",
+                newSessionSub: "Fill this in each time you do clinical duty (up to 4x a week).",
+                dutyDate: "Duty Date", start: "Start", end: "End",
+                clinicalHours: "Total Clinical Hours",
+                activity: "Activity Category (Scope)",
+                act31: "3.1 Specialist Clinic / Outpatients",
+                act32: "3.2 Ward Patient Management & Discharge Summaries",
+                act33: "3.3 Emergency & Trauma Department",
+                actOther: "Other Clinical Activity (Customized)",
+                details: "Details / Cases / Ward", optional: "(optional)",
+                detailsPh: "E.g. Melur Ward 4, 15 patients",
+                supName: "Supervisor / HOD Name", supNamePh: "Dr. Supervisor",
+                supRole: "Supervisor Position", supRolePh: "Head of Department / Specialist",
+                sigLabel: "Supervisor Touch Signature (Touchscreen)",
+                clear: "Clear",
+                sigHint: "Use a finger / stylus to sign on the screen.",
+                saveSession: "Save Attendance Session",
+                sessionsTitle: "Recorded Attendance Sessions",
+                sessionsSub: "Signed and verified sessions for",
+                sessionsCount: "Sessions: {n}",
+                thDate: "Date", thTime: "Time & Hours", thActivity: "Activity", thSupervisor: "Supervisor",
+                thSignature: "Signature", thAction: "Action",
+                noSessions: "No attendance sessions recorded for this month. Please fill in the form.",
+                loadingSessions: "Loading sessions...",
+                hoursUnit: "Hours", signed: "Signed", deleteSession: "Delete session",
+                lbTitle: "Clinical Duty Implementation Form (Appendix A)",
+                lbSub: "Monthly summary to be submitted to the Deputy Medical Director 1.",
+                reportMonth: "Report Month:", refresh: "Refresh",
+                totalSessions: "Total Sessions", totalHours: "Total Clinical Hours",
+                target: "Target Achievement (≥30%)", complianceStatus: "Compliance Status",
+                waiting: "AWAITING DATA", compliant: "COMPLIANT (≥30%)", notCompliant: "INSUFFICIENT (<30%)",
+                compliantShort: "COMPLIANT", notCompliantShort: "INSUFFICIENT",
+                submitTitle: "Submit Appendix A Summary to the Deputy Medical Director 1",
+                submitSub: "An official email will be sent to <b>ferwahn@moh.gov.my</b> with an official PDF copy saved in Google Drive.",
+                submitBtn: "Submit Report & Verification Details",
+                lbSigLabel: "PPTUK Officer's Initials",
+                lbSigHint: "Your initials will be placed in the Appendix A PDF under \"Prepared & Submitted By\".",
+                needLbSig: "Please add your initials in the Appendix A signature box before submitting.",
+                historyTitle: "My Submission History",
+                thDateTime: "Date / Time", thMonth: "Month", thSessions: "Sessions", thHours: "Clinical Hours",
+                thAchievement: "Achievement", thStatus: "Status", thPdf: "PDF Document",
+                thOfficerId: "Officer ID", thOfficerName: "Officer Name",
+                noSubmissions: "No submissions yet.", viewPdf: "View PDF", sessionsShort: "sessions",
+                adminBadge: "Admin Dashboard (TDP 1)",
+                adminTitle: "PPTUK Clinical Activity & Compliance Monitoring",
+                adminEmail: "Admin Email: ferwahn@moh.gov.my",
+                allMonths: "All Months", reloadData: "Reload Data",
+                reportsReceived: "Total Reports Received",
+                compliantCount: "Meeting Mandatory Target (≥30%)", notCompliantCount: "Below Target (<30%)",
+                adminTableTitle: "Appendix A Log Books Received",
+                noReports: "No reports received yet.", loadingReports: "Loading log book data...",
+                footerOrg: "Selangor State Health Department",
+                footerSupport: "Technical support: ferwahn@moh.gov.my",
+                success: "Success", warning: "Warning", error: "Error", loginError: "Login Error",
+                welcome: "Welcome, {name}!",
+                needSig: "Please get the supervisor's signature in the signature box before saving.",
+                badHours: "Invalid number of clinical hours.",
+                sessionSaved: "Clinical attendance session recorded and signed successfully!",
+                confirmDelete: "Permanently delete this session from the records?",
+                noSessionsForMonth: "No attendance sessions for {month}. Please record at least one session.",
+                confirmResubmit: "You have already submitted the Log Book for {month}. Submit the latest version again?",
+                confirmSubmit: "Submit the {month} Log Book ({n} sessions) to TDP 1?",
+                processing: "Processing",
+                processingMsg: "Generating the PDF and emailing TDP 1. Please wait...",
+                submitted: "Submitted",
+                submittedMsg: "Appendix A Log Book ({id}) has been sent to the Deputy Medical Director 1. Achievement: {pct}.",
+                submitError: "Submission Error",
+                connError: "Could not reach the backend server. Please check your internet connection.",
+                unknownError: "Unknown error."
+            }
+        };
+
+        // Backend (Apps Script) messages are in Malay; English equivalents for the toggle.
+        const BACKEND_MSG_EN = {
+            "ID Pengguna atau kata laluan salah.": "Incorrect User ID or password.",
+            "Sesi log masuk tamat. Sila log masuk semula.": "Your login session has expired. Please log in again.",
+            "Akses tidak dibenarkan untuk peranan ini.": "Access is not permitted for this role.",
+            "Tarikh tidak sah.": "Invalid date.",
+            "Jumlah jam tidak sah.": "Invalid number of hours.",
+            "Nama penyelia diperlukan.": "Supervisor name is required.",
+            "Anda hanya boleh memadam sesi anda sendiri.": "You can only delete your own sessions.",
+            "Sesi tidak dijumpai.": "Session not found.",
+            "Bulan laporan tidak sah.": "Invalid report month.",
+            "Paraf pegawai diperlukan untuk Lampiran A.": "Officer's initials are required for Appendix A.",
+            "Tindakan tidak dikenal pasti": "Unknown action."
+        };
+
+        // Activity values are stored in Malay; map to translation keys for display.
+        const ACTIVITY_KEYS = {
+            "3.1 Klinik Pakar / Pesakit Luar": "act31",
+            "3.2 Pengurusan Pesakit Wad & Discaj": "act32",
+            "3.3 Jabatan Kecemasan & Trauma": "act33",
+            "Aktiviti Klinikal Lain (Customized)": "actOther"
+        };
+
+        let lang = "ms";
         let currentUser = null;   // { id, name, role }
         let authToken = null;
         let attendanceSessions = [];
+        let mySubmissions = [];
         let adminSubmissions = [];
-        let canvas, ctx, isDrawing = false, hasSignature = false;
+        let pads = {};   // signature pads: att = supervisor (session form), lb = officer (Lampiran A)
 
-        window.onload = function () {
-            const savedUrl = localStorage.getItem('pptuk_api_url');
-            document.getElementById('api_web_app_url').value = savedUrl || DEFAULT_API_URL;
+        function t(key, vars) {
+            let s = (I18N[lang] && I18N[lang][key]) || I18N.ms[key] || key;
+            if (vars) Object.keys(vars).forEach(k => { s = s.split("{" + k + "}").join(vars[k]); });
+            return s;
+        }
 
+        function translateBackendMsg(msg) {
+            if (lang !== "en" || !msg) return msg;
+            if (BACKEND_MSG_EN[msg]) return BACKEND_MSG_EN[msg];
+            const m = msg.match(/^Tiada sesi kehadiran direkodkan bagi (.+)\.$/);
+            if (m) return `No attendance sessions recorded for ${displayMonthLabel(m[1])}.`;
+            return msg;
+        }
+
+        function storageGet(store, key) { try { return window[store].getItem(key); } catch (e) { return null; } }
+        function storageSet(store, key, val) { try { window[store].setItem(key, val); } catch (e) {} }
+        function storageRemove(store, key) { try { window[store].removeItem(key); } catch (e) {} }
+
+        function applyLanguage() {
+            document.documentElement.lang = lang;
+            document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+            document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+            document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+
+            // Re-render dynamic parts in the new language
             populateMonthSelect();
-            initSignaturePad();
+            updateAuthButton();
+            updateMonthLabels();
+            renderAttendanceTable();
+            recalculateLogbook();
+            renderMySubmissions();
+            populateAdminFilter();
+            renderAdminTable();
+        }
+
+        function toggleLanguage() {
+            lang = lang === "ms" ? "en" : "ms";
+            storageSet("localStorage", "pptuk_lang", lang);
+            applyLanguage();
+        }
+
+        // ================= Startup =================
+        window.onload = function () {
+            lang = storageGet("localStorage", "pptuk_lang") === "en" ? "en" : "ms";
+            pads.att = createSignaturePad("signature_canvas");
+            pads.lb = createSignaturePad("lb_signature_canvas");
             document.getElementById('att_date').value = todayIso();
 
-            const saved = sessionStorage.getItem('pptuk_session');
+            const saved = storageGet("sessionStorage", "pptuk_session");
             if (saved) {
                 const s = JSON.parse(saved);
                 currentUser = s.user;
                 authToken = s.token;
             }
+            applyLanguage();
             renderApp();
         };
 
@@ -447,16 +673,29 @@
             const d = new Date();
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
+        /** "2026-11" -> Malay label "November 2026" (the format stored in the sheet). */
+        function monthLabelMs(key) {
+            const [y, m] = key.split('-');
+            return `${MONTHS.ms[parseInt(m, 10) - 1]} ${y}`;
+        }
+        /** "2026-11" -> label in the current language. */
         function monthLabel(key) {
             const [y, m] = key.split('-');
-            return `${BULAN_MS[parseInt(m, 10) - 1]} ${y}`;
+            return `${MONTHS[lang][parseInt(m, 10) - 1]} ${y}`;
+        }
+        /** Stored Malay label "Disember 2026" -> label in the current language. */
+        function displayMonthLabel(msLabel) {
+            const parts = String(msLabel).split(' ');
+            const idx = MONTHS.ms.indexOf(parts[0]);
+            return idx >= 0 ? `${MONTHS[lang][idx]} ${parts[1] || ''}`.trim() : msLabel;
         }
         function selectedMonth() {
             return document.getElementById('report_month_select').value;
         }
         function populateMonthSelect() {
-            // Bulan semasa + 5 bulan sebelumnya
+            // Current month + previous 5 months
             const sel = document.getElementById('report_month_select');
+            const current = sel.value;
             const now = new Date();
             sel.innerHTML = "";
             for (let i = 0; i < 6; i++) {
@@ -464,47 +703,41 @@
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                 sel.add(new Option(monthLabel(key), key));
             }
+            if (current) sel.value = current;
+        }
+        function updateMonthLabels() {
+            const m = selectedMonth();
+            if (!m) return;
+            document.getElementById('att_month_label').innerText = monthLabel(m);
+            document.getElementById('lb_month_label').innerText = monthLabel(m);
         }
         function setBusy(btnId, busy) {
             const b = document.getElementById(btnId);
             if (b) b.disabled = busy;
         }
+        function isCompliant(status) {
+            return String(status).indexOf("MEMATUHI") === 0;
+        }
 
         // ================= Backend API =================
-        function getApiUrl() {
-            return document.getElementById('api_web_app_url').value.trim();
-        }
-
-        function saveApiUrl() {
-            const url = getApiUrl();
-            if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
-                showModal("Amaran", "Sila masukkan URL Web App Google Apps Script yang sah (berakhir dengan /exec).", "warning");
-                return;
-            }
-            localStorage.setItem('pptuk_api_url', url);
-            showModal("Berjaya", "URL Backend Google Apps Script telah disimpan.", "success");
-        }
-
-        /** Hantar permintaan ke Apps Script. Body dihantar sebagai text/plain untuk elak CORS preflight. */
+        /** POST to Apps Script. Body is sent as text/plain to avoid a CORS preflight. */
         async function api(action, params = {}) {
-            const url = getApiUrl();
-            if (!url) throw new Error("URL backend belum ditetapkan.");
             let res;
             try {
-                const r = await fetch(url, {
+                const r = await fetch(DEFAULT_API_URL, {
                     method: 'POST',
                     body: JSON.stringify(Object.assign({ action, token: authToken }, params))
                 });
                 res = await r.json();
             } catch (err) {
-                throw new Error("Gagal menghubungi pelayan backend. Sila semak sambungan internet dan URL Web App.");
+                throw new Error(t('connError'));
             }
             if (res.status === "AUTH") {
                 clearSession();
                 renderApp();
-                throw new Error(res.message);
+                throw new Error(translateBackendMsg(res.message));
             }
-            if (res.status !== "SUCCESS") throw new Error(res.message || "Ralat tidak diketahui.");
+            if (res.status !== "SUCCESS") throw new Error(translateBackendMsg(res.message) || t('unknownError'));
             return res;
         }
 
@@ -519,22 +752,23 @@
                 const res = await api("LOGIN", { userId, password });
                 currentUser = res.user;
                 authToken = res.token;
-                sessionStorage.setItem('pptuk_session', JSON.stringify({ user: currentUser, token: authToken }));
+                storageSet("sessionStorage", "pptuk_session", JSON.stringify({ user: currentUser, token: authToken }));
                 document.getElementById('login_password').value = "";
                 renderApp();
-                showModal("Berjaya", `Selamat datang, ${currentUser.name}!`, "success");
+                showModal(t('success'), t('welcome', { name: currentUser.name }), "success");
             } catch (err) {
-                showModal("Ralat Log Masuk", err.message, "error");
+                showModal(t('loginError'), err.message, "error");
             } finally {
                 setBusy('login_submit_btn', false);
             }
         }
 
         function clearSession() {
-            sessionStorage.removeItem('pptuk_session');
+            storageRemove("sessionStorage", "pptuk_session");
             currentUser = null;
             authToken = null;
             attendanceSessions = [];
+            mySubmissions = [];
             adminSubmissions = [];
         }
 
@@ -544,14 +778,19 @@
             renderApp();
         }
 
+        function updateAuthButton() {
+            const authBtn = document.getElementById('nav_auth_btn');
+            document.getElementById('auth_btn_label').innerText = currentUser ? t('logout') : t('login');
+            authBtn.onclick = currentUser ? logout : () => document.getElementById('login_user_id').focus();
+        }
+
         // ================= Render UI based on role =================
         function renderApp() {
             const loginView = document.getElementById('view_login');
             const officerPortal = document.getElementById('view_officer_portal');
             const adminDashboard = document.getElementById('view_admin_dashboard');
             const navBadge = document.getElementById('nav_user_badge');
-            const authBtn = document.getElementById('nav_auth_btn');
-            const authBtnLabel = document.getElementById('auth_btn_label');
+            updateAuthButton();
 
             if (!currentUser) {
                 loginView.classList.remove('hidden');
@@ -559,8 +798,6 @@
                 adminDashboard.classList.add('hidden');
                 navBadge.classList.add('hidden');
                 navBadge.classList.remove('flex');
-                authBtnLabel.innerText = "Log Masuk";
-                authBtn.onclick = () => document.getElementById('login_user_id').focus();
                 return;
             }
 
@@ -568,8 +805,6 @@
             navBadge.classList.remove('hidden');
             navBadge.classList.add('flex');
             document.getElementById('nav_display_name').innerText = currentUser.name;
-            authBtnLabel.innerText = "Log Keluar";
-            authBtn.onclick = logout;
 
             if (currentUser.role === "ADMIN") {
                 adminDashboard.classList.remove('hidden');
@@ -579,7 +814,7 @@
                 officerPortal.classList.remove('hidden');
                 adminDashboard.classList.add('hidden');
                 document.getElementById('welcome_officer_name').innerText = currentUser.name;
-                resizeSignaturePad(); // kanvas kini kelihatan, jadi saiznya boleh diukur
+                pads.att.resize(); // canvas is visible now, so it can be measured
                 loadMySessions();
                 loadMySubmissions();
             }
@@ -594,73 +829,83 @@
             document.getElementById('tab_content_logbook').classList.toggle('hidden', isAtt);
             document.getElementById('btn_tab_att').className = isAtt ? active : inactive;
             document.getElementById('btn_tab_lb').className = isAtt ? inactive : active;
-            if (isAtt) resizeSignaturePad(); else recalculateLogbook();
+            if (isAtt) pads.att.resize(); else { pads.lb.resize(); recalculateLogbook(); }
         }
 
         function onMonthChange() {
             loadMySessions();
         }
 
-        // ================= Signature Pad =================
-        function initSignaturePad() {
-            canvas = document.getElementById('signature_canvas');
-            if (!canvas) return;
-            ctx = canvas.getContext('2d');
+        // ================= Signature Pads =================
+        /** Create a touch/mouse signature pad on a canvas. Returns helpers for that pad. */
+        function createSignaturePad(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            let drawing = false, signed = false;
 
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDraw);
-            canvas.addEventListener('mouseleave', stopDraw);
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e.touches[0]); }, { passive: false });
-            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
-            canvas.addEventListener('touchend', (e) => { e.preventDefault(); stopDraw(); }, { passive: false });
-            window.addEventListener('resize', resizeSignaturePad);
+            /** Match the canvas resolution to its on-screen size. Must run while the canvas is visible. */
+            function resize() {
+                if (canvas.offsetWidth === 0) return;
+                const ratio = window.devicePixelRatio || 1;
+                const w = Math.round(canvas.offsetWidth * ratio);
+                const h = Math.round(canvas.offsetHeight * ratio);
+                if (canvas.width === w && canvas.height === h) return;
+                canvas.width = w;
+                canvas.height = h;
+                ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0f172a';
+                signed = false; // resizing clears the canvas
+            }
+            function pos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            }
+            function start(e) {
+                resize();
+                drawing = true;
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            }
+            function move(e) {
+                if (!drawing) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                signed = true;
+            }
+            function stop() { drawing = false; }
+            function clear() {
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+                signed = false;
+            }
+            /** Export at on-screen size (not device-pixel size) to keep the PNG small. */
+            function toDataURL() {
+                const out = document.createElement('canvas');
+                out.width = canvas.offsetWidth;
+                out.height = canvas.offsetHeight;
+                out.getContext('2d').drawImage(canvas, 0, 0, out.width, out.height);
+                return out.toDataURL('image/png');
+            }
+
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('mousemove', move);
+            canvas.addEventListener('mouseup', stop);
+            canvas.addEventListener('mouseleave', stop);
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e.touches[0]); }, { passive: false });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); move(e.touches[0]); }, { passive: false });
+            canvas.addEventListener('touchend', (e) => { e.preventDefault(); stop(); }, { passive: false });
+            window.addEventListener('resize', resize);
+
+            return { resize, clear, toDataURL, isSigned: () => signed };
         }
 
-        /** Tetapkan resolusi kanvas mengikut saiz paparan. Perlu dipanggil bila kanvas kelihatan. */
-        function resizeSignaturePad() {
-            if (!canvas || canvas.offsetWidth === 0) return;
-            const ratio = window.devicePixelRatio || 1;
-            const w = Math.round(canvas.offsetWidth * ratio);
-            const h = Math.round(canvas.offsetHeight * ratio);
-            if (canvas.width === w && canvas.height === h) return;
-            canvas.width = w;
-            canvas.height = h;
-            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-            ctx.lineWidth = 2;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#0f172a';
-            hasSignature = false; // menukar saiz memadam kanvas
-        }
-
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-        }
-        function startDraw(e) {
-            resizeSignaturePad();
-            isDrawing = true;
-            const pos = getMousePos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        }
-        function draw(e) {
-            if (!isDrawing) return;
-            const pos = getMousePos(e);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            hasSignature = true;
-        }
-        function stopDraw() { isDrawing = false; }
-        function clearSignaturePad() {
-            if (!ctx) return;
-            ctx.save();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-            hasSignature = false;
-        }
 
         // ================= Attendance =================
         function autoCalcHours() {
@@ -670,19 +915,19 @@
             const [sh, sm] = s.split(':').map(Number);
             const [eh, em] = e.split(':').map(Number);
             let mins = (eh * 60 + em) - (sh * 60 + sm);
-            if (mins <= 0) mins += 24 * 60; // syif melepasi tengah malam
+            if (mins <= 0) mins += 24 * 60; // shift past midnight
             document.getElementById('att_hours').value = Math.round(mins / 15) * 0.25;
         }
 
         async function handleAttendanceSubmit(e) {
             e.preventDefault();
-            if (!hasSignature) {
-                showModal("Amaran", "Sila dapatkan tandatangan penyelia pada ruang tandatangan sebelum menyimpan.", "warning");
+            if (!pads.att.isSigned()) {
+                showModal(t('warning'), t('needSig'), "warning");
                 return;
             }
             const hours = parseFloat(document.getElementById('att_hours').value);
             if (!(hours > 0 && hours <= 24)) {
-                showModal("Amaran", "Jumlah jam klinikal tidak sah.", "warning");
+                showModal(t('warning'), t('badHours'), "warning");
                 return;
             }
             const data = {
@@ -694,8 +939,7 @@
                 details: document.getElementById('att_details').value.trim(),
                 supervisorName: document.getElementById('att_supervisor').value.trim(),
                 supervisorRole: document.getElementById('att_sup_role').value.trim(),
-                verificationLink: document.getElementById('att_verif_link').value.trim(),
-                signatureData: canvas.toDataURL('image/png')
+                signatureData: pads.att.toDataURL()
             };
 
             setBusy('att_submit_btn', true);
@@ -703,16 +947,16 @@
                 await api("LOG_ATTENDANCE", { data });
                 document.getElementById('attendance_form').reset();
                 document.getElementById('att_date').value = todayIso();
-                clearSignaturePad();
+                pads.att.clear();
 
-                // Tukar ke bulan sesi yang baru disimpan jika ia tersenarai
+                // Jump to the month of the session just saved, if it is in the list
                 const key = data.date.substring(0, 7);
                 const sel = document.getElementById('report_month_select');
                 if ([...sel.options].some(o => o.value === key)) sel.value = key;
                 await loadMySessions();
-                showModal("Berjaya", "Sesi kehadiran klinikal berjaya direkod dan ditandatangani!", "success");
+                showModal(t('success'), t('sessionSaved'), "success");
             } catch (err) {
-                showModal("Ralat", err.message, "error");
+                showModal(t('error'), err.message, "error");
             } finally {
                 setBusy('att_submit_btn', false);
             }
@@ -720,53 +964,63 @@
 
         async function loadMySessions() {
             const month = selectedMonth();
-            document.getElementById('att_month_label').innerText = monthLabel(month);
-            document.getElementById('lb_month_label').innerText = monthLabel(month);
+            updateMonthLabels();
             document.getElementById('attendance_table_body').innerHTML =
-                `<tr><td colspan="6" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuatkan sesi...</td></tr>`;
+                `<tr><td colspan="6" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> ${esc(t('loadingSessions'))}</td></tr>`;
             try {
                 const res = await api("GET_MY_SESSIONS", { month });
-                if (month !== selectedMonth()) return; // pengguna telah menukar bulan
+                if (month !== selectedMonth()) return; // user changed month meanwhile
                 attendanceSessions = res.sessions;
             } catch (err) {
                 attendanceSessions = [];
-                if (currentUser) showModal("Ralat", err.message, "error");
+                if (currentUser) showModal(t('error'), err.message, "error");
             }
             renderAttendanceTable();
             recalculateLogbook();
         }
 
+        function signatureCell(s) {
+            const img = String(s.signatureImg || "");
+            if (img.indexOf("data:image/png;base64,") === 0) {
+                return `<img src="${esc(img)}" alt="${esc(t('thSignature'))}" class="h-10 max-w-[140px] object-contain bg-white">`;
+            }
+            if (s.signatureRef && s.signatureRef !== "None") {
+                return `<span class="text-emerald-700 font-bold"><i class="fas fa-signature mr-1"></i>${esc(t('signed'))}</span>`;
+            }
+            return '-';
+        }
+
         function renderAttendanceTable() {
             const tbody = document.getElementById('attendance_table_body');
-            document.getElementById('att_count_badge').innerText = `${attendanceSessions.length} Sesi`;
+            document.getElementById('att_count_badge').innerText = t('sessionsCount', { n: attendanceSessions.length });
 
             if (attendanceSessions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 italic">Tiada sesi kehadiran direkodkan bagi bulan ini. Sila isi borang di sebelah.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 italic">${esc(t('noSessions'))}</td></tr>`;
                 return;
             }
             tbody.innerHTML = attendanceSessions.map(s => {
-                const link = safeUrl(s.verificationLink);
+                const actKey = ACTIVITY_KEYS[s.activityType];
                 return `
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-2 border">${esc(s.date)}</td>
-                    <td class="p-2 border">${esc(s.startTime)} - ${esc(s.endTime)}<br><b>${esc(s.hours)} Jam</b></td>
-                    <td class="p-2 border"><b>${esc(s.activityType)}</b><br><small class="text-gray-500">${esc(s.details)}</small></td>
+                    <td class="p-2 border">${esc(s.startTime)} - ${esc(s.endTime)}<br><b>${esc(s.hours)} ${esc(t('hoursUnit'))}</b></td>
+                    <td class="p-2 border"><b>${esc(actKey ? t(actKey) : s.activityType)}</b>${s.details ? `<br><small class="text-gray-500">${esc(s.details)}</small>` : ''}</td>
                     <td class="p-2 border">${esc(s.supervisorName)}<br><small class="text-gray-500">${esc(s.supervisorRole)}</small></td>
-                    <td class="p-2 border font-mono text-[10px]">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" class="text-blue-600 underline">Pautan Bukti</a>` : 'Tiada'}</td>
+                    <td class="p-2 border">${signatureCell(s)}</td>
                     <td class="p-2 border text-center">
-                        <button onclick="deleteSession('${esc(s.sessionId)}')" title="Padam sesi" class="text-red-600 hover:text-red-800 p-1"><i class="fas fa-trash"></i></button>
+                        <button onclick="deleteSession('${esc(s.sessionId)}')" title="${esc(t('deleteSession'))}" class="text-red-600 hover:text-red-800 p-1"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
             }).join('');
         }
 
         async function deleteSession(sessionId) {
-            if (!confirm("Padam sesi ini secara kekal dari rekod?")) return;
+            if (!confirm(t('confirmDelete'))) return;
             try {
                 await api("DELETE_SESSION", { sessionId });
                 await loadMySessions();
             } catch (err) {
-                showModal("Ralat", err.message, "error");
+                showModal(t('error'), err.message, "error");
             }
         }
 
@@ -776,18 +1030,18 @@
             const percentage = (totalHours / STANDARD_MONTHLY_HOURS) * 100;
 
             document.getElementById('sum_total_sessions').innerText = attendanceSessions.length;
-            document.getElementById('sum_total_hours').innerText = totalHours.toFixed(1) + " Jam";
+            document.getElementById('sum_total_hours').innerText = totalHours.toFixed(1) + " " + t('hoursUnit');
             document.getElementById('sum_compliance_pct').innerText = percentage.toFixed(1) + "%";
 
             const statusEl = document.getElementById('sum_status_text');
             if (attendanceSessions.length === 0) {
-                statusEl.innerText = "MENUNGGU DATA";
+                statusEl.innerText = t('waiting');
                 statusEl.className = "text-sm font-bold text-gray-500 mt-2";
             } else if (percentage >= 30) {
-                statusEl.innerText = "MEMATUHI (≥30%)";
+                statusEl.innerText = t('compliant');
                 statusEl.className = "text-sm font-bold text-emerald-700 mt-2";
             } else {
-                statusEl.innerText = "BELUM CUKUP (<30%)";
+                statusEl.innerText = t('notCompliant');
                 statusEl.className = "text-sm font-bold text-red-600 mt-2";
             }
         }
@@ -795,31 +1049,33 @@
         async function submitLogbookToDeputyDirector() {
             const month = selectedMonth();
             if (attendanceSessions.length === 0) {
-                showModal("Amaran", `Tiada sesi kehadiran bagi ${monthLabel(month)}. Sila rekodkan sekurang-kurangnya satu sesi.`, "warning");
+                showModal(t('warning'), t('noSessionsForMonth', { month: monthLabel(month) }), "warning");
                 return;
             }
-            const already = mySubmissions.some(s => s.month === monthLabel(month));
+            if (!pads.lb.isSigned()) {
+                showModal(t('warning'), t('needLbSig'), "warning");
+                return;
+            }
+            const already = mySubmissions.some(s => s.month === monthLabelMs(month));
             const msg = already
-                ? `Anda telah menghantar Log Book bagi ${monthLabel(month)}. Hantar semula versi terkini?`
-                : `Hantar Log Book ${monthLabel(month)} (${attendanceSessions.length} sesi) kepada TDP 1?`;
+                ? t('confirmResubmit', { month: monthLabel(month) })
+                : t('confirmSubmit', { month: monthLabel(month), n: attendanceSessions.length });
             if (!confirm(msg)) return;
 
             setBusy('lb_submit_btn', true);
-            showModal("Memproses", "Menjana PDF dan menghantar emel kepada TDP 1. Sila tunggu...", "info");
+            showModal(t('processing'), t('processingMsg'), "info");
             try {
-                const res = await api("SUBMIT_LOGBOOK", { month });
-                showModal("Berjaya Dihantar",
-                    `Log Book Lampiran A (${res.logbook.logbookId}) telah dihantar kepada Timbalan Pengarah Perubatan 1. Pencapaian: ${res.logbook.percentage}.`,
-                    "success");
+                const res = await api("SUBMIT_LOGBOOK", { month, signatureData: pads.lb.toDataURL() });
+                pads.lb.clear();
+                showModal(t('submitted'), t('submittedMsg', { id: res.logbook.logbookId, pct: res.logbook.percentage }), "success");
                 loadMySubmissions();
             } catch (err) {
-                showModal("Ralat Penghantaran", err.message, "error");
+                showModal(t('submitError'), err.message, "error");
             } finally {
                 setBusy('lb_submit_btn', false);
             }
         }
 
-        let mySubmissions = [];
         async function loadMySubmissions() {
             try {
                 const res = await api("GET_MY_SUBMISSIONS");
@@ -827,26 +1083,30 @@
             } catch (err) {
                 mySubmissions = [];
             }
+            renderMySubmissions();
+        }
+
+        function renderMySubmissions() {
             const tbody = document.getElementById('my_submissions_table_body');
             if (mySubmissions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Belum ada penyerahan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">${esc(t('noSubmissions'))}</td></tr>`;
                 return;
             }
             tbody.innerHTML = mySubmissions.map(s => `
                 <tr class="border-b">
                     <td class="p-2 border">${esc(s.submittedAt)}</td>
-                    <td class="p-2 border">${esc(s.month)}</td>
+                    <td class="p-2 border">${esc(displayMonthLabel(s.month))}</td>
                     <td class="p-2 border">${esc(s.sessionCount)}</td>
-                    <td class="p-2 border">${esc(s.clinicalHours)} Jam</td>
+                    <td class="p-2 border">${esc(s.clinicalHours)} ${esc(t('hoursUnit'))}</td>
                     <td class="p-2 border font-bold">${esc(s.percentage)}</td>
-                    <td class="p-2 border text-center">${s.pdfUrl ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold">Lihat PDF</a>` : '-'}</td>
+                    <td class="p-2 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold">${esc(t('viewPdf'))}</a>` : '-'}</td>
                 </tr>`).join('');
         }
 
         // ================= Admin Dashboard =================
         async function loadAdminData() {
             const tbody = document.getElementById('admin_submissions_table_body');
-            tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat turun data log book...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> ${esc(t('loadingReports'))}</td></tr>`;
             try {
                 const res = await api("ADMIN_GET_SUBMISSIONS");
                 adminSubmissions = res.submissions;
@@ -855,22 +1115,24 @@
                 tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-600">${esc(err.message)}</td></tr>`;
                 return;
             }
+            populateAdminFilter();
+            renderAdminTable();
+        }
 
-            // Isi penapis bulan dari data yang ada
+        /** Fill the month filter from the data (values stay as the stored Malay labels). */
+        function populateAdminFilter() {
             const filter = document.getElementById('admin_month_filter');
             const current = filter.value;
             const months = [...new Set(adminSubmissions.map(s => s.month))];
-            filter.innerHTML = `<option value="">Semua Bulan</option>` +
-                months.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+            filter.innerHTML = `<option value="">${esc(t('allMonths'))}</option>` +
+                months.map(m => `<option value="${esc(m)}">${esc(displayMonthLabel(m))}</option>`).join('');
             if (months.includes(current)) filter.value = current;
-
-            renderAdminTable();
         }
 
         function renderAdminTable() {
             const month = document.getElementById('admin_month_filter').value;
             const rows = month ? adminSubmissions.filter(s => s.month === month) : adminSubmissions;
-            const compliant = rows.filter(s => s.status.indexOf("MEMATUHI") === 0).length;
+            const compliant = rows.filter(s => isCompliant(s.status)).length;
 
             document.getElementById('admin_total_reports').innerText = rows.length;
             document.getElementById('admin_compliant_count').innerText = compliant;
@@ -878,21 +1140,21 @@
 
             const tbody = document.getElementById('admin_submissions_table_body');
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-400 italic">Tiada laporan diterima lagi.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-400 italic">${esc(t('noReports'))}</td></tr>`;
                 return;
             }
             tbody.innerHTML = rows.map(s => {
-                const ok = s.status.indexOf("MEMATUHI") === 0;
+                const ok = isCompliant(s.status);
                 return `
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-3 border">${esc(s.submittedAt)}</td>
                     <td class="p-3 border font-mono">${esc(s.userId)}</td>
                     <td class="p-3 border font-bold">${esc(s.officerName)}</td>
-                    <td class="p-3 border">${esc(s.month)}</td>
-                    <td class="p-3 border">${esc(s.clinicalHours)} Jam <small class="text-gray-500">(${esc(s.sessionCount)} sesi)</small></td>
+                    <td class="p-3 border">${esc(displayMonthLabel(s.month))}</td>
+                    <td class="p-3 border">${esc(s.clinicalHours)} ${esc(t('hoursUnit'))} <small class="text-gray-500">(${esc(s.sessionCount)} ${esc(t('sessionsShort'))})</small></td>
                     <td class="p-3 border font-bold ${ok ? 'text-emerald-700' : 'text-red-600'}">${esc(s.percentage)}</td>
-                    <td class="p-3 border"><span class="${ok ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} text-[10px] font-bold px-2 py-0.5 rounded">${ok ? 'MEMATUHI' : 'BELUM CUKUP'}</span></td>
-                    <td class="p-3 border text-center">${s.pdfUrl ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline text-xs font-bold">Lihat PDF</a>` : '-'}</td>
+                    <td class="p-3 border"><span class="${ok ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} text-[10px] font-bold px-2 py-0.5 rounded">${esc(ok ? t('compliantShort') : t('notCompliantShort'))}</span></td>
+                    <td class="p-3 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline text-xs font-bold">${esc(t('viewPdf'))}</a>` : '-'}</td>
                 </tr>`;
             }).join('');
         }
