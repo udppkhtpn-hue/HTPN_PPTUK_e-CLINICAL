@@ -573,6 +573,8 @@
             <div id="modal_icon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl"></div>
             <h3 id="modal_title" class="h-display text-lg"></h3>
             <p id="modal_message" class="text-xs text-gray-700"></p>
+            <!-- Optional action link, e.g. "save a copy of the PDF" -->
+            <a id="modal_action" href="#" target="_blank" rel="noopener" class="btn btn-yellow w-full hidden"></a>
             <button onclick="closeModal()" class="btn btn-ink w-full">OK</button>
         </div>
     </div>
@@ -656,6 +658,8 @@
                 thAchievement: "Pencapaian", thStatus: "Status", thPdf: "Dokumen PDF",
                 thOfficerId: "ID Pegawai", thOfficerName: "Nama Pegawai",
                 noSubmissions: "Belum ada penyerahan.", viewPdf: "Lihat PDF", sessionsShort: "sesi",
+                downloadPdf: "Muat Turun", saveCopy: "Simpan Salinan PDF",
+                saveCopyPrompt: "Simpan salinan Lampiran A ini untuk rekod anda. Salinan juga boleh dimuat turun kemudian dari Sejarah Penyerahan Saya.",
                 adminBadge: "Dashboard Pentadbir (TPP 1)",
                 adminTitle: "Pemantauan Aktiviti Klinikal & Pematuhan PPTUK",
                 adminEmail: "Emel Pentadbir: ferwahn@moh.gov.my",
@@ -750,6 +754,8 @@
                 thAchievement: "Achievement", thStatus: "Status", thPdf: "PDF Document",
                 thOfficerId: "Officer ID", thOfficerName: "Officer Name",
                 noSubmissions: "No submissions yet.", viewPdf: "View PDF", sessionsShort: "sessions",
+                downloadPdf: "Download", saveCopy: "Save a Copy (PDF)",
+                saveCopyPrompt: "Save a copy of this Appendix A for your records. You can also download it later from My Submission History.",
                 adminBadge: "Admin Dashboard (TPP 1)",
                 adminTitle: "PPTUK Clinical Activity & Compliance Monitoring",
                 adminEmail: "Admin Email: ferwahn@moh.gov.my",
@@ -1278,7 +1284,11 @@
                 pads.lb.clear();
                 jadualFiles = [];
                 renderJadualList();
-                showModal(t('submitted'), t('submittedMsg', { id: res.logbook.logbookId, pct: res.logbook.percentage }), "success");
+                const dl = pdfDownloadUrl(res.logbook.pdfUrl);
+                showModal(t('submitted'),
+                    t('submittedMsg', { id: res.logbook.logbookId, pct: res.logbook.percentage }) + (dl ? "\n\n" + t('saveCopyPrompt') : ""),
+                    "success",
+                    dl ? { label: t('saveCopy'), href: dl, icon: 'fa-file-arrow-down' } : null);
                 loadMySubmissions();
             } catch (err) {
                 showModal(t('submitError'), err.message, "error");
@@ -1372,6 +1382,12 @@
             }).join('');
         }
 
+        /** Turn a Google Drive file link into a direct-download link (empty if it isn't a Drive file link). */
+        function pdfDownloadUrl(url) {
+            const m = String(url || "").match(/\/d\/([-\w]{25,})/) || String(url || "").match(/[?&]id=([-\w]{25,})/);
+            return m ? `https://drive.google.com/uc?export=download&id=${m[1]}` : "";
+        }
+
         function jadualLinks(urls) {
             const list = (urls || []).map(safeUrl).filter(Boolean);
             if (list.length === 0) return '-';
@@ -1402,7 +1418,7 @@
                     <td class="p-2 border">${esc(s.clinicalHours)} ${esc(t('hoursUnit'))}</td>
                     <td class="p-2 border font-bold">${esc(s.percentage)}</td>
                     <td class="p-2 border">${jadualLinks(s.jadualUrls)}</td>
-                    <td class="p-2 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold">${esc(t('viewPdf'))}</a>` : '-'}</td>
+                    <td class="p-2 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold whitespace-nowrap">${esc(t('viewPdf'))}</a>${pdfDownloadUrl(s.pdfUrl) ? `<br><a href="${esc(pdfDownloadUrl(s.pdfUrl))}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold whitespace-nowrap"><i class="fas fa-download"></i> ${esc(t('downloadPdf'))}</a>` : ''}` : '-'}</td>
                 </tr>`).join('');
         }
 
@@ -1464,11 +1480,22 @@
         }
 
         // ================= Modal =================
-        function showModal(title, message, type = "success") {
+        /** action (optional): { label, href, icon } shown as a button under the message. */
+        function showModal(title, message, type = "success", action = null) {
             const modal = document.getElementById('modal_notification');
             const icon = document.getElementById('modal_icon');
             document.getElementById('modal_title').innerText = title;
             document.getElementById('modal_message').innerText = message;
+
+            const actionEl = document.getElementById('modal_action');
+            if (action && safeUrl(action.href)) {
+                actionEl.href = action.href;
+                actionEl.innerHTML = `<i class="fas ${esc(action.icon || 'fa-download')}"></i> ${esc(action.label)}`;
+                actionEl.classList.remove('hidden');
+            } else {
+                actionEl.classList.add('hidden');
+                actionEl.removeAttribute('href');
+            }
 
             const styles = {
                 success: ["bg-emerald-100 text-emerald-700", "fa-check"],
