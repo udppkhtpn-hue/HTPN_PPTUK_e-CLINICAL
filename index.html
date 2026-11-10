@@ -442,6 +442,17 @@
                             <h4 class="h-display text-lg mt-2" data-i18n="submitTitle"></h4>
                             <p class="text-[11px] text-gray-700 mt-1" data-i18n-html="submitSub"></p>
 
+                            <!-- Jadual Bertugas (duty roster) endorsed by the supervisor -->
+                            <div class="mt-5 text-xs">
+                                <div class="field-label"><i class="fas fa-calendar-check"></i> <span data-i18n="jadualLabel"></span> <span class="font-mono2 normal-case font-normal text-gray-600" data-i18n="optional"></span></div>
+                                <label for="jadual_input" class="btn btn-white !py-2 cursor-pointer">
+                                    <i class="fas fa-upload"></i> <span data-i18n="jadualChoose"></span>
+                                </label>
+                                <input type="file" id="jadual_input" accept="image/*,application/pdf" multiple class="sr-only" onchange="handleJadualFiles(this.files); this.value='';">
+                                <p class="text-[10px] text-gray-700 mt-2" data-i18n="jadualHint"></p>
+                                <ul id="jadual_list" class="mt-3 space-y-2"></ul>
+                            </div>
+
                             <!-- Officer's initials for the Lampiran A PDF -->
                             <div class="mt-5 max-w-sm text-xs">
                                 <div class="field-label justify-between">
@@ -474,6 +485,7 @@
                                         <th data-i18n="thSessions"></th>
                                         <th data-i18n="thHours"></th>
                                         <th data-i18n="thAchievement"></th>
+                                        <th data-i18n="thJadual"></th>
                                         <th class="!text-center">PDF</th>
                                     </tr>
                                 </thead>
@@ -536,6 +548,7 @@
                                 <th data-i18n="thHours"></th>
                                 <th data-i18n="thAchievement"></th>
                                 <th data-i18n="thStatus"></th>
+                                <th data-i18n="thJadual"></th>
                                 <th class="!text-center" data-i18n="thPdf"></th>
                             </tr>
                         </thead>
@@ -629,6 +642,14 @@
                 submitBtn: "Hantar Laporan & Butiran Pengesahan",
                 lbSigLabel: "Tandatangan Ringkas (Paraf) Pegawai PPTUK",
                 lbSigHint: "Paraf anda akan dimasukkan ke dalam PDF Lampiran A di ruang \"Disediakan & Dihantar Oleh\".",
+                jadualLabel: "Jadual Bertugas Di Kawasan Klinikal (Disahkan Penyelia)",
+                jadualChoose: "Muat Naik Dokumen / Foto",
+                jadualHint: "Gambar atau PDF jadual bertugas yang telah ditandatangani penyelia. Maksimum 5 fail; PDF tidak melebihi 5 MB. Foto akan dikecilkan secara automatik.",
+                thJadual: "Jadual Bertugas", fileN: "Fail {n}", remove: "Buang",
+                jadualTooMany: "Maksimum 5 fail sahaja untuk Jadual Bertugas.",
+                jadualBadType: "Fail \"{name}\" tidak disokong. Sila guna gambar (JPG/PNG) atau PDF.",
+                jadualTooBig: "Fail PDF \"{name}\" melebihi 5 MB.",
+                jadualReadError: "Fail \"{name}\" tidak dapat dibaca. Jika ia foto HEIC dari iPhone, sila tukar kepada JPG atau ambil tangkapan skrin.",
                 needLbSig: "Sila turunkan paraf anda pada ruang tandatangan Lampiran A sebelum menghantar.",
                 historyTitle: "Sejarah Penyerahan Saya",
                 thDateTime: "Tarikh / Masa", thMonth: "Bulan", thSessions: "Sesi", thHours: "Jam Klinikal",
@@ -715,6 +736,14 @@
                 submitBtn: "Submit Report & Verification Details",
                 lbSigLabel: "PPTUK Officer's Initials",
                 lbSigHint: "Your initials will be placed in the Appendix A PDF under \"Prepared & Submitted By\".",
+                jadualLabel: "Clinical Area Duty Roster (Endorsed by Supervisor)",
+                jadualChoose: "Upload Document / Photo",
+                jadualHint: "A photo or PDF of the duty roster signed by your supervisor. Up to 5 files; PDFs up to 5 MB. Photos are resized automatically.",
+                thJadual: "Duty Roster", fileN: "File {n}", remove: "Remove",
+                jadualTooMany: "You can attach at most 5 duty roster files.",
+                jadualBadType: "\"{name}\" is not supported. Please use a photo (JPG/PNG) or a PDF.",
+                jadualTooBig: "The PDF \"{name}\" is larger than 5 MB.",
+                jadualReadError: "\"{name}\" could not be read. If it is an iPhone HEIC photo, please convert it to JPG or take a screenshot.",
                 needLbSig: "Please add your initials in the Appendix A signature box before submitting.",
                 historyTitle: "My Submission History",
                 thDateTime: "Date / Time", thMonth: "Month", thSessions: "Sessions", thHours: "Clinical Hours",
@@ -762,6 +791,7 @@
             "Sesi tidak dijumpai.": "Session not found.",
             "Bulan laporan tidak sah.": "Invalid report month.",
             "Paraf pegawai diperlukan untuk Lampiran A.": "Officer's initials are required for Appendix A.",
+            "Lampiran Jadual Bertugas tidak sah.": "Invalid duty roster attachment.",
             "Tindakan tidak dikenal pasti": "Unknown action."
         };
 
@@ -812,6 +842,7 @@
             renderAttendanceTable();
             recalculateLogbook();
             renderMySubmissions();
+            renderJadualList();
             populateAdminFilter();
             renderAdminTable();
         }
@@ -1242,8 +1273,11 @@
             setBusy('lb_submit_btn', true);
             showModal(t('processing'), t('processingMsg'), "info");
             try {
-                const res = await api("SUBMIT_LOGBOOK", { month, signatureData: pads.lb.toDataURL() });
+                const attachments = jadualFiles.map(f => ({ name: f.name, mimeType: f.mimeType, data: f.dataUrl.split(',')[1] }));
+                const res = await api("SUBMIT_LOGBOOK", { month, signatureData: pads.lb.toDataURL(), attachments });
                 pads.lb.clear();
+                jadualFiles = [];
+                renderJadualList();
                 showModal(t('submitted'), t('submittedMsg', { id: res.logbook.logbookId, pct: res.logbook.percentage }), "success");
                 loadMySubmissions();
             } catch (err) {
@@ -1251,6 +1285,97 @@
             } finally {
                 setBusy('lb_submit_btn', false);
             }
+        }
+
+        // ================= Jadual Bertugas attachments =================
+        const JADUAL_MAX_FILES = 5;
+        const JADUAL_MAX_PDF_BYTES = 5 * 1024 * 1024;
+        const JADUAL_IMG_MAX_SIDE = 1800;   // photos are resized to this longest side
+        let jadualFiles = [];               // [{ name, mimeType, dataUrl, size }]
+
+        function readAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(r.result);
+                r.onerror = () => reject(r.error);
+                r.readAsDataURL(file);
+            });
+        }
+
+        /** Shrink a photo to JPEG so uploads stay small (phone photos are often 3-8 MB). */
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    const scale = Math.min(1, JADUAL_IMG_MAX_SIDE / Math.max(img.width, img.height));
+                    const c = document.createElement('canvas');
+                    c.width = Math.round(img.width * scale);
+                    c.height = Math.round(img.height * scale);
+                    const cx = c.getContext('2d');
+                    cx.fillStyle = '#fff';
+                    cx.fillRect(0, 0, c.width, c.height);
+                    cx.drawImage(img, 0, 0, c.width, c.height);
+                    resolve(c.toDataURL('image/jpeg', 0.82));
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('decode')); };
+                img.src = url;
+            });
+        }
+
+        async function handleJadualFiles(fileList) {
+            for (const file of [...fileList]) {
+                if (jadualFiles.length >= JADUAL_MAX_FILES) {
+                    showModal(t('warning'), t('jadualTooMany'), "warning");
+                    break;
+                }
+                try {
+                    if (file.type === 'application/pdf') {
+                        if (file.size > JADUAL_MAX_PDF_BYTES) {
+                            showModal(t('warning'), t('jadualTooBig', { name: file.name }), "warning");
+                            continue;
+                        }
+                        const dataUrl = await readAsDataURL(file);
+                        jadualFiles.push({ name: file.name, mimeType: 'application/pdf', dataUrl, size: file.size });
+                    } else if (file.type.indexOf('image/') === 0) {
+                        const dataUrl = await compressImage(file);
+                        const name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+                        jadualFiles.push({ name, mimeType: 'image/jpeg', dataUrl, size: Math.round(dataUrl.length * 0.75) });
+                    } else {
+                        showModal(t('warning'), t('jadualBadType', { name: file.name }), "warning");
+                    }
+                } catch (err) {
+                    showModal(t('error'), t('jadualReadError', { name: file.name }), "error");
+                }
+            }
+            renderJadualList();
+        }
+
+        function removeJadualFile(i) {
+            jadualFiles.splice(i, 1);
+            renderJadualList();
+        }
+
+        function renderJadualList() {
+            const ul = document.getElementById('jadual_list');
+            if (!ul) return;
+            ul.innerHTML = jadualFiles.map((f, i) => {
+                const thumb = f.mimeType === 'application/pdf'
+                    ? `<div class="w-12 h-12 grid place-items-center bg-white" style="border:2px solid var(--ink)"><i class="fas fa-file-pdf text-xl" style="color:var(--red)"></i></div>`
+                    : `<img src="${esc(f.dataUrl)}" alt="" class="w-12 h-12 object-cover bg-white" style="border:2px solid var(--ink)">`;
+                return `<li class="flex items-center gap-3 bg-white p-2" style="border:2px solid var(--ink)">
+                    ${thumb}
+                    <div class="flex-1 min-w-0"><p class="font-bold break-all leading-tight">${esc(f.name)}</p><p class="text-[10px] text-gray-600">${(f.size / 1024).toFixed(0)} KB</p></div>
+                    <button type="button" onclick="removeJadualFile(${i})" class="chip red">${esc(t('remove'))}</button>
+                </li>`;
+            }).join('');
+        }
+
+        function jadualLinks(urls) {
+            const list = (urls || []).map(safeUrl).filter(Boolean);
+            if (list.length === 0) return '-';
+            return list.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold whitespace-nowrap">${esc(t('fileN', { n: i + 1 }))}</a>`).join('<br>');
         }
 
         async function loadMySubmissions() {
@@ -1266,7 +1391,7 @@
         function renderMySubmissions() {
             const tbody = document.getElementById('my_submissions_table_body');
             if (mySubmissions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">${esc(t('noSubmissions'))}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400 italic">${esc(t('noSubmissions'))}</td></tr>`;
                 return;
             }
             tbody.innerHTML = mySubmissions.map(s => `
@@ -1276,6 +1401,7 @@
                     <td class="p-2 border">${esc(s.sessionCount)}</td>
                     <td class="p-2 border">${esc(s.clinicalHours)} ${esc(t('hoursUnit'))}</td>
                     <td class="p-2 border font-bold">${esc(s.percentage)}</td>
+                    <td class="p-2 border">${jadualLinks(s.jadualUrls)}</td>
                     <td class="p-2 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline font-bold">${esc(t('viewPdf'))}</a>` : '-'}</td>
                 </tr>`).join('');
         }
@@ -1283,13 +1409,13 @@
         // ================= Admin Dashboard =================
         async function loadAdminData() {
             const tbody = document.getElementById('admin_submissions_table_body');
-            tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> ${esc(t('loadingReports'))}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> ${esc(t('loadingReports'))}</td></tr>`;
             try {
                 const res = await api("ADMIN_GET_SUBMISSIONS");
                 adminSubmissions = res.submissions;
             } catch (err) {
                 adminSubmissions = [];
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-600">${esc(err.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-red-600">${esc(err.message)}</td></tr>`;
                 return;
             }
             populateAdminFilter();
@@ -1317,7 +1443,7 @@
 
             const tbody = document.getElementById('admin_submissions_table_body');
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-400 italic">${esc(t('noReports'))}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-400 italic">${esc(t('noReports'))}</td></tr>`;
                 return;
             }
             tbody.innerHTML = rows.map(s => {
@@ -1331,6 +1457,7 @@
                     <td class="p-3 border">${esc(s.clinicalHours)} ${esc(t('hoursUnit'))} <small class="text-gray-500">(${esc(s.sessionCount)} ${esc(t('sessionsShort'))})</small></td>
                     <td class="p-3 border font-bold ${ok ? 'text-emerald-700' : 'text-red-600'}">${esc(s.percentage)}</td>
                     <td class="p-3 border"><span class="${ok ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} text-[10px] font-bold px-2 py-0.5 rounded">${esc(ok ? t('compliantShort') : t('notCompliantShort'))}</span></td>
+                    <td class="p-3 border">${jadualLinks(s.jadualUrls)}</td>
                     <td class="p-3 border text-center">${safeUrl(s.pdfUrl) ? `<a href="${esc(s.pdfUrl)}" target="_blank" rel="noopener" class="text-blue-600 underline text-xs font-bold">${esc(t('viewPdf'))}</a>` : '-'}</td>
                 </tr>`;
             }).join('');
